@@ -1,17 +1,15 @@
-﻿#define COMPLETE_TEST
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <fstream>
 
 char* trimCharString(char* result, const char delim);
 char* removeZeroChar(char* result, const int length);
+
 char* getSimilarChars(char* result, const char* source1, const char* source2);
 
 int main() 
 {
 	setlocale(LC_ALL, "ru");
-
-#if defined(COMPLETE_TEST)
 
 	char* filepath = new char[256];
 	std::cout << "Введите путь к файлу (можно с \" \"): ";
@@ -25,53 +23,79 @@ int main()
 		std::cerr << "Файл не открылся!";
 		return -1;
 	}
+	delete[] filepath;
 
 	int firstLineLength = 0;
 	int secondLineLength = 0;
+
 	char* firstLine = nullptr;
 	char* secondLine = nullptr;
 	char* result = nullptr;
 
-	while(!filestream.eof())
+	while (filestream.good())
 	{
-		filestream >> firstLineLength;
-		firstLine = new char[firstLineLength + 1];
+		try 
+		{
+			filestream >> firstLineLength;
+			firstLineLength += 1;
+			firstLine = new char[firstLineLength];
+			for (size_t i = 0; i < firstLineLength; i++)
+			{
+				*(firstLine + i) = '\0';
+			}
 
-		filestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
-		filestream >> secondLineLength;
-		secondLine = new char[secondLineLength + 1];
+			filestream >> secondLineLength;
+			secondLineLength += 1;
+			secondLine = new char[secondLineLength];
+			for (size_t i = 0; i < secondLineLength; i++)
+			{
+				*(secondLine + i) = '\0';
+			}
 
-		filestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
-		filestream >> firstLine;
-		firstLine[firstLineLength] = '\0';
-
-		filestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
-		filestream >> secondLine;
-		secondLine[secondLineLength] = '\0';
+			filestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
+			filestream.getline(firstLine, firstLineLength, '\n');
+			filestream.getline(secondLine, secondLineLength, '\n');
+		}
+		catch(std::ifstream::failure)
+		{
+			std::cerr << "Ошибка при чтении / открытии файла.";
+			return -1;
+		}
+		catch(std::exception)
+		{
+			std::cerr << "произошла ошибка";
+			return -1;
+		}
 
 		std::cout << "\nВы ввели:\n"
-			<< '\t' << "1. строку { " << firstLine << " } размером " << firstLineLength << " символов.\n"
-			<< '\t' << "2. строку { " << secondLine << " } размером " << secondLineLength << " символов.\n";
+			<< '\t' << "1. строку { " << firstLine << " } размером " << firstLineLength - 1 << " символов.\n"
+			<< '\t' << "2. строку { " << secondLine << " } размером " << secondLineLength - 1 << " символов.\n";
 		
 		int maxLength = (firstLineLength >= secondLineLength) ? firstLineLength : secondLineLength;
 		result = new char[maxLength];
+		for (size_t i = 0; i < maxLength; i++)
+		{
+			*(result + i) = '\0';
+		}
+
 		result = getSimilarChars(result, firstLine, secondLine);
 
 		std::cout << "\nСтрока состоящая из идентичных символов:\n"
-			<< "-\n" << result << "\n-";
+			<< "-\n" << result << "\n-" << '\n';
+		
+		delete[] firstLine;
+		delete[] secondLine;
+		delete[] result;
 	}
 
-	delete[] filepath;
-	delete[] firstLine;
-	delete[] secondLine;
-	delete[] result;
+	filestream.close();
 
-#endif
 	return 0;
 }
 
+
 /// <summary>
-/// Удаляет любые вхождения заданного символа из строки
+/// Удалить любые вхождения заданного символа из строки
 /// </summary>
 /// <param name="result"> - строка в которой следует удалить символ</param>
 /// <param name="delim"> - символ, который следует удалить</param>
@@ -99,7 +123,7 @@ char * trimCharString(char* result, const char delim)
 }
 
 /// <summary>
-/// Переносит все нуль-терминаторы в конец строки
+/// Перенести все нуль-терминаторы в конец строки
 /// </summary>
 /// <param name="result"> - строка</param>
 /// <param name="length"> - длина строки</param>
@@ -137,7 +161,7 @@ char * removeZeroChar(char* result, const int length)
 char * getSimilarChars(char *result, const char* source1, const char* source2)
 {
 	int i = 0;
-	while (*source1 || *source2)
+	while (*source1 && *source2)
 	{
 		if (*(source1) == *(source2))
 		{
@@ -147,6 +171,5 @@ char * getSimilarChars(char *result, const char* source1, const char* source2)
 		++source1;
 		++source2;
 	}
-	*(result + i) = '\0';
 	return result;
 }
