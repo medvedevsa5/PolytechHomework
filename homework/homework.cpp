@@ -12,10 +12,19 @@ int main()
 	setlocale(LC_ALL, "ru");
 
 #if defined(COMPLETE_TEST)
+
 	char* filepath = new char[256];
 	std::cout << "Введите путь к файлу (можно с \" \"): ";
 	std::cin >> filepath;
 	trimCharString(filepath, '\"');
+
+	std::ifstream filestream;
+	filestream.open(filepath);
+	if (!filestream.is_open())
+	{
+		std::cerr << "Файл не открылся!";
+		return -1;
+	}
 
 	int firstLineLength = 0;
 	int secondLineLength = 0;
@@ -23,16 +32,8 @@ int main()
 	char* secondLine = nullptr;
 	char* result = nullptr;
 
-	try 
+	while(!filestream.eof())
 	{
-		std::ifstream filestream;
-		filestream.open(filepath);
-		if(!filestream.is_open())
-		{
-			std::cerr << "Файл не открылся!";
-			return -1;
-		}
-
 		filestream >> firstLineLength;
 		firstLine = new char[firstLineLength + 1];
 
@@ -51,32 +52,21 @@ int main()
 		std::cout << "\nВы ввели:\n"
 			<< '\t' << "1. строку { " << firstLine << " } размером " << firstLineLength << " символов.\n"
 			<< '\t' << "2. строку { " << secondLine << " } размером " << secondLineLength << " символов.\n";
-	}
-	catch (std::exception)
-	{
-		std::cerr << "Произошла ошибка";
-	}
-
-	int maxLength = (firstLineLength >= secondLineLength) ? firstLineLength : secondLineLength;
-	result = new char[maxLength];
-
-	try 
-	{
+		
+		int maxLength = (firstLineLength >= secondLineLength) ? firstLineLength : secondLineLength;
+		result = new char[maxLength];
 		result = getSimilarChars(result, firstLine, secondLine);
+
 		std::cout << "\nСтрока состоящая из идентичных символов:\n"
 			<< "-\n" << result << "\n-";
 	}
-	catch(std::exception e)
-	{
-		std::cerr << e.what();
-	}
-	
+
 	delete[] filepath;
 	delete[] firstLine;
 	delete[] secondLine;
 	delete[] result;
-#endif
 
+#endif
 	return 0;
 }
 
@@ -114,7 +104,7 @@ char * trimCharString(char* result, const char delim)
 /// <param name="result"> - строка</param>
 /// <param name="length"> - длина строки</param>
 /// <returns></returns>
-char * removeZeroChar(char* result, const int length) // переносит нуль-терминатор в конец строки
+char * removeZeroChar(char* result, const int length)
 {
 	int offset = 0;
 	for (size_t i = 0; i < length; i++)
@@ -144,7 +134,7 @@ char * removeZeroChar(char* result, const int length) // переносит ну
 /// <param name="source1"></param>
 /// <param name="source2"></param>
 /// <returns></returns>
-char * getSimilarChars(char *result, const char* source1, const char* source2)  // задание
+char * getSimilarChars(char *result, const char* source1, const char* source2)
 {
 	int i = 0;
 	while (*source1 || *source2)
