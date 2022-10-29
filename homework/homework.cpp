@@ -1,7 +1,17 @@
-﻿#include <iostream>
-#include <string>
+﻿#pragma warn C6001
+#include <iostream>
 #include <fstream>
 
+enum ErrorCase
+{
+	FileNotOpenedError = 1,
+	NullPointerError,
+	IOError,
+	BadAllocError,
+	GeneralError
+};
+
+void printError(const int error);
 char* trimCharString(char* result, const char delim);
 char* removeZeroChar(char* result, const int length);
 
@@ -18,11 +28,14 @@ int main()
 
 	std::ifstream filestream;
 	filestream.open(filepath);
+	
 	if (!filestream.is_open())
 	{
-		std::cerr << "Файл не открылся!";
+		printError(ErrorCase::FileNotOpenedError);
+		delete[] filepath;
 		return -1;
 	}
+	
 	delete[] filepath;
 
 	int firstLineLength = 0;
@@ -56,14 +69,31 @@ int main()
 			filestream.getline(firstLine, firstLineLength, '\n');
 			filestream.getline(secondLine, secondLineLength, '\n');
 		}
-		catch(std::ifstream::failure)
+		catch(const std::ios::failure& e)
 		{
-			std::cerr << "Ошибка при чтении / открытии файла.";
+			printError(ErrorCase::IOError);
+			std::cerr << e.what();
+			filestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
 			return -1;
 		}
-		catch(std::exception)
+		catch(const std::bad_alloc& e)
 		{
-			std::cerr << "произошла ошибка";
+			printError(ErrorCase::BadAllocError);
+			std::cerr << e.what();
+			filestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
+			return -1;
+		}
+		catch(const std::exception& e)
+		{
+			printError(ErrorCase::GeneralError);
+			std::cerr << e.what();
+			filestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
 			return -1;
 		}
 
@@ -73,13 +103,13 @@ int main()
 		
 		int maxLength = (firstLineLength >= secondLineLength) ? firstLineLength : secondLineLength;
 		result = new char[maxLength];
+		
 		for (size_t i = 0; i < maxLength; i++)
 		{
 			*(result + i) = '\0';
 		}
 
 		result = getSimilarChars(result, firstLine, secondLine);
-
 		std::cout << "\nСтрока состоящая из идентичных символов:\n"
 			<< "-\n" << result << "\n-" << '\n';
 		
@@ -172,4 +202,31 @@ char * getSimilarChars(char *result, const char* source1, const char* source2)
 		++source2;
 	}
 	return result;
+}
+
+void printError(const int error)
+{
+	const char* errorString = nullptr;
+	switch (error)
+	{
+	case 1:
+		errorString = "Файл не открылся!";
+		break;
+	case 2:
+		errorString = "Указатель на массив пустой!";
+		break;
+	case 3:
+		errorString = "Ошибка при чтении / открытии файла.";
+		break;
+	case 4:
+		errorString = "Введён неверный размер массива ";
+		break;
+	case 5:
+		errorString = "Произошла необработанная ошибка";
+		break;
+	default:
+		errorString = "Произошла произошла необработанная ошибка";
+		break;
+	}
+	printf("\n\x1B[31m%s\033[0m\n", errorString);
 }
