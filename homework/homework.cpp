@@ -11,7 +11,7 @@ enum ErrorCase
 	GeneralError
 };
 
-void printError(const int error);
+void printError(const ErrorCase &error);
 char* trimCharString(char* result, const char delim);
 char* removeZeroChar(char* result, const int length);
 
@@ -52,6 +52,7 @@ int main()
 			filestream >> firstLineLength;
 			firstLineLength += 1;
 			firstLine = new char[firstLineLength];
+
 			for (size_t i = 0; i < firstLineLength; i++)
 			{
 				*(firstLine + i) = '\0';
@@ -60,6 +61,7 @@ int main()
 			filestream >> secondLineLength;
 			secondLineLength += 1;
 			secondLine = new char[secondLineLength];
+
 			for (size_t i = 0; i < secondLineLength; i++)
 			{
 				*(secondLine + i) = '\0';
@@ -110,19 +112,21 @@ int main()
 		}
 
 		result = getSimilarChars(result, firstLine, secondLine);
-		std::cout << "\nСтрока состоящая из идентичных символов:\n"
-			<< "-\n" << result << "\n-" << '\n';
 		
 		delete[] firstLine;
+		firstLine = nullptr;
+
 		delete[] secondLine;
+		secondLine = nullptr;
+
 		delete[] result;
+		result = nullptr;
 	}
 
 	filestream.close();
 
 	return 0;
 }
-
 
 /// <summary>
 /// Удалить любые вхождения заданного символа из строки
@@ -204,29 +208,29 @@ char * getSimilarChars(char *result, const char* source1, const char* source2)
 	return result;
 }
 
-void printError(const int error)
+void printError(const ErrorCase &error)
 {
 	const char* errorString = nullptr;
 	switch (error)
 	{
-	case 1:
+	case ErrorCase::FileNotOpenedError:
 		errorString = "Файл не открылся!";
 		break;
-	case 2:
+	case ErrorCase::NullPointerError:
 		errorString = "Указатель на массив пустой!";
 		break;
-	case 3:
+	case ErrorCase::IOError:
 		errorString = "Ошибка при чтении / открытии файла.";
 		break;
-	case 4:
+	case ErrorCase::BadAllocError:
 		errorString = "Введён неверный размер массива ";
 		break;
-	case 5:
+	case ErrorCase::GeneralError:
 		errorString = "Произошла необработанная ошибка";
 		break;
 	default:
-		errorString = "Произошла произошла необработанная ошибка";
+		errorString = "Что вообще произошло?";
 		break;
 	}
-	printf("\n\x1B[31m%s\033[0m\n", errorString);
+	std::cout << "\n\x1B[31m" << errorString << "\n\033[0m";
 }
