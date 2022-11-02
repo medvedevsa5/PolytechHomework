@@ -4,10 +4,8 @@
 #include <iostream>
 #include <string>
 
-
 void inArray(int** matrix, int rowCount, int columnCount);
 void outArray(int** matrix, int rowCount, int columnCount);
-
 
 int main()
 {

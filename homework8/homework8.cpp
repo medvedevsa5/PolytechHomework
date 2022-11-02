@@ -1,7 +1,14 @@
 ﻿#include <iostream>
-#include <cmath>
+#include <fstream>
 
-int** getSnake(int** matrix, int rowCount, int columnCount);
+const int ROW_WARNING = 256;
+const int COLUMN_WARNING = 256;
+const int ROW_MAXIMUM = 16384;
+const int COLUMN_MAXIMUM = 16384;
+
+const std::string OUTPUT_FILE_NAME = "matrix.txt";
+
+int** getSnake(int** matrix, const int rowCount, const int columnCount);
 
 int main()
 {
@@ -9,38 +16,72 @@ int main()
 
 	int rowCount = 0;
 	int columnCount = 0;
-	int numbers = 0;
 
+	std::cout << "Введите количество срок матрицы: ";
 	std::cin >> rowCount;
-	std::cin >> columnCount;
+	std::cout << std::endl;
 
-	int** matrix = new int* [rowCount];
-	
-	for (size_t i = 0; i < rowCount; i++)
+	std::cout << "А теперь количество столбцов: ";
+	std::cin >> columnCount;
+	std::cout << std::endl;
+
+	if(rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
 	{
-		matrix[i] = new int[columnCount];
-		for (size_t j = 0; j < columnCount; j++)
+		std::cout << "Вы даже файл открыть свой не сможете...";
+		return -1;
+	}
+
+	if(rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
+	{
+		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано. Вы действительно хотите продолжить? (Y/N) ";
+		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
+		char ch = std::cin.get();
+		if (tolower(ch) != 'y') return 0;
+	}
+
+	int** matrix = nullptr;
+
+	try
+	{
+		matrix = new int* [rowCount];
+		for (size_t i = 0; i < rowCount; i++)
 		{
-			++numbers;
+			matrix[i] = new int[columnCount];
 		}
+	}
+	catch (std::bad_alloc& e)
+	{
+		std::cout << "Введён неправильный размер массива!";
+		return -1;
 	}
 
 	matrix = getSnake(matrix, rowCount, columnCount);
 
-	std::cout << "Выходная матрица:" << std::endl<< std::endl;
+	std::ofstream outputStream(OUTPUT_FILE_NAME);
 
 	for (size_t i = 0; i < rowCount; i++)
 	{
-		for (size_t j = 0; j < columnCount; j++)
+		outputStream << "" << matrix[i][0];
+		for (size_t j = 1; j < columnCount; j++)
 		{
-			std::cout << '\t' << matrix[i][j] << ' ';
+			outputStream << "\t" << matrix[i][j];
+			delete[] matrix[i];
 		}
-		std::cout << std::endl << std::endl;
+		outputStream << std::endl << std::endl;
 	}
+
+	outputStream.close();
+	delete[] matrix;
+
+	std::cout << "Выходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
+
+	system("pause");
+
 	return 0;
 }
 
-int** getSnake(int** matrix, int rowCount, int columnCount)
+// вернуть спираль из натуральных чисел, расположенных против часовой стрелки по возрастанию
+int** getSnake(int** matrix, const int rowCount, const int columnCount)
 {
 	int emptyElemetsCount = rowCount * columnCount;
 	
@@ -61,21 +102,20 @@ int** getSnake(int** matrix, int rowCount, int columnCount)
 	{
 		matrix[yCoord][xCoord] = zahlen;
 		emptyElemetsCount -= 1;
+		zahlen += 1;
 
-		if(!isMovingHorizontal && !isReverse)
+		if (!isMovingHorizontal && !isReverse)
 		{
-			if(yCoord + 1 > (rowCount - 1) - bottomWall)
+			if (yCoord + 1 > (rowCount - 1) - bottomWall)
 			{
 				isMovingHorizontal = !isMovingHorizontal;
 				leftWall += 1;
 				xCoord += 1;
-				zahlen += 1;
 				continue;
 			}
-			zahlen += 1;
 			yCoord += 1;
 		}
-		else if(isMovingHorizontal && !isReverse)
+		else if (isMovingHorizontal && !isReverse)
 		{
 			if (xCoord + 1 > (columnCount - 1) - rightWall)
 			{
@@ -83,23 +123,19 @@ int** getSnake(int** matrix, int rowCount, int columnCount)
 				isReverse = !isReverse;
 				bottomWall += 1;
 				yCoord -= 1;
-				zahlen += 1;
 				continue;
 			}
-			zahlen += 1;
 			xCoord += 1;
 		}
-		else if(!isMovingHorizontal && isReverse)
+		else if (!isMovingHorizontal && isReverse)
 		{
 			if (yCoord - 1 < topWall)
 			{
 				isMovingHorizontal = !isMovingHorizontal;
 				rightWall += 1;
 				xCoord -= 1;
-				zahlen += 1;
 				continue;
 			}
-			zahlen += 1;
 			yCoord -= 1;
 		}
 		else if (isMovingHorizontal && isReverse)
@@ -110,13 +146,10 @@ int** getSnake(int** matrix, int rowCount, int columnCount)
 				isReverse = !isReverse;
 				topWall += 1;
 				yCoord += 1;
-				zahlen += 1;
 				continue;
 			}
-			zahlen += 1;
 			xCoord -= 1;
 		}
 	}
-
 	return matrix;
 }

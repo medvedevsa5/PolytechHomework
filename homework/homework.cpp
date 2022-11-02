@@ -1,19 +1,22 @@
-﻿#pragma warn C6001
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
+
+const std::string OUTPUT_FILE_NAME = "output.txt";
 
 enum ErrorCase
 {
-	FileNotOpenedError = 1,
+	FileNotOpenError = 1,
 	NullPointerError,
 	IOError,
 	BadAllocError,
 	GeneralError
 };
 
-void printError(const ErrorCase &error);
 char* trimCharString(char* result, const char delim);
 char* removeZeroChar(char* result, const int length);
+
+void printError(const ErrorCase& error);
+void terminateProgram(const ErrorCase& error, char* firstArray = nullptr, char* secondArray = nullptr, char* thirdArray = nullptr);
 
 char* getSimilarChars(char* result, const char* source1, const char* source2);
 
@@ -26,12 +29,15 @@ int main()
 	std::cin >> filepath;
 	trimCharString(filepath, '\"');
 
-	std::ifstream filestream;
-	filestream.open(filepath);
+	std::ifstream inputFilestream;
+	std::ofstream outputFilestream;
+	inputFilestream.open(filepath);
+	outputFilestream.open(OUTPUT_FILE_NAME);
 	
-	if (!filestream.is_open())
+	if (!inputFilestream.is_open())
 	{
-		printError(ErrorCase::FileNotOpenedError);
+		printError(ErrorCase::FileNotOpenError);
+		inputFilestream.close();
 		delete[] filepath;
 		return -1;
 	}
@@ -45,11 +51,11 @@ int main()
 	char* secondLine = nullptr;
 	char* result = nullptr;
 
-	while (filestream.good())
+	while (inputFilestream.good())
 	{
 		try 
 		{
-			filestream >> firstLineLength;
+			inputFilestream >> firstLineLength;
 			firstLineLength += 1;
 			firstLine = new char[firstLineLength];
 
@@ -58,7 +64,7 @@ int main()
 				*(firstLine + i) = '\0';
 			}
 
-			filestream >> secondLineLength;
+			inputFilestream >> secondLineLength;
 			secondLineLength += 1;
 			secondLine = new char[secondLineLength];
 
@@ -67,35 +73,23 @@ int main()
 				*(secondLine + i) = '\0';
 			}
 
-			filestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
-			filestream.getline(firstLine, firstLineLength, '\n');
-			filestream.getline(secondLine, secondLineLength, '\n');
+			inputFilestream.ignore(std::cin.rdbuf()->in_avail(), '\n');
+			inputFilestream.getline(firstLine, firstLineLength, '\n');
+			inputFilestream.getline(secondLine, secondLineLength, '\n');
 		}
 		catch(const std::ios::failure& e)
 		{
-			printError(ErrorCase::IOError);
-			std::cerr << e.what();
-			filestream.close();
-			delete[] firstLine;
-			delete[] secondLine;
+			terminateProgram(ErrorCase::IOError, firstLine, secondLine);
 			return -1;
 		}
 		catch(const std::bad_alloc& e)
 		{
-			printError(ErrorCase::BadAllocError);
-			std::cerr << e.what();
-			filestream.close();
-			delete[] firstLine;
-			delete[] secondLine;
+			terminateProgram(ErrorCase::BadAllocError, firstLine, secondLine);
 			return -1;
 		}
 		catch(const std::exception& e)
 		{
-			printError(ErrorCase::GeneralError);
-			std::cerr << e.what();
-			filestream.close();
-			delete[] firstLine;
-			delete[] secondLine;
+			terminateProgram(ErrorCase::GeneralError, firstLine, secondLine);
 			return -1;
 		}
 
@@ -113,6 +107,9 @@ int main()
 
 		result = getSimilarChars(result, firstLine, secondLine);
 		
+		outputFilestream << result << std::endl;
+		outputFilestream.flush();
+
 		delete[] firstLine;
 		firstLine = nullptr;
 
@@ -123,7 +120,8 @@ int main()
 		result = nullptr;
 	}
 
-	filestream.close();
+	inputFilestream.close();
+	outputFilestream.close();
 
 	return 0;
 }
@@ -143,11 +141,11 @@ char * trimCharString(char* result, const char delim)
 	}
 	for (size_t i = 0; i < length; i++)
 	{
-		if(*(result + i) == '"')
+		if(*(result + i) == delim)
 		{
 			*(result + i) = '\0';
 		}
-		if (*(result + length - i) == '"')
+		if (*(result + length - i) == delim)
 		{
 			*(result + length - i) = '\0';
 		}
@@ -156,12 +154,8 @@ char * trimCharString(char* result, const char delim)
 	return result;
 }
 
-/// <summary>
-/// Перенести все нуль-терминаторы в конец строки
-/// </summary>
-/// <param name="result"> - строка</param>
-/// <param name="length"> - длина строки</param>
-/// <returns></returns>
+
+// перенести все нуль-терминаторы в конец строки
 char * removeZeroChar(char* result, const int length)
 {
 	int offset = 0;
@@ -177,7 +171,6 @@ char * removeZeroChar(char* result, const int length)
 			char temp = *(result + i - offset);
 			*(result + i - offset) = *(result + i);
 			*(result + i) = temp;
-
 			i = i - offset;
 			offset = 0;
 		}
@@ -213,7 +206,7 @@ void printError(const ErrorCase &error)
 	const char* errorString = nullptr;
 	switch (error)
 	{
-	case ErrorCase::FileNotOpenedError:
+	case ErrorCase::FileNotOpenError:
 		errorString = "Файл не открылся!";
 		break;
 	case ErrorCase::NullPointerError:
@@ -223,14 +216,24 @@ void printError(const ErrorCase &error)
 		errorString = "Ошибка при чтении / открытии файла.";
 		break;
 	case ErrorCase::BadAllocError:
-		errorString = "Введён неверный размер массива ";
+		errorString = "Введён неверный размер массива.";
 		break;
 	case ErrorCase::GeneralError:
-		errorString = "Произошла необработанная ошибка";
-		break;
+
 	default:
-		errorString = "Что вообще произошло?";
+		errorString = "Произошла необработанная ошибка.";
 		break;
 	}
 	std::cout << "\n\x1B[31m" << errorString << "\n\033[0m";
+}
+
+void terminateProgram(const ErrorCase &error, char* firstArray, char* secondArray, char* thirdArray)
+{
+	printError(error);
+
+	delete[] firstArray;
+	delete[] secondArray;
+	delete[] thirdArray;
+
+	exit(-1);
 }
