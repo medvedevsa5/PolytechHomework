@@ -15,8 +15,8 @@ enum ErrorCase
 char* trimCharString(char* result, const char delim);
 char* removeZeroChar(char* result, const int length);
 
-void printError(const ErrorCase& error);
 void terminateProgram(const ErrorCase& error, char* firstArray = nullptr, char* secondArray = nullptr, char* thirdArray = nullptr);
+void printError(const ErrorCase& error);
 
 char* getSimilarChars(char* result, const char* source1, const char* source2);
 
@@ -94,8 +94,8 @@ int main()
 		}
 
 		std::cout << "\nВы ввели:\n"
-			<< '\t' << "1. строку { " << firstLine << " } размером " << firstLineLength - 1 << " символов.\n"
-			<< '\t' << "2. строку { " << secondLine << " } размером " << secondLineLength - 1 << " символов.\n";
+			<< '\t' << "1. строку [ " << firstLine << " ] размером " << firstLineLength - 1 << " символов.\n"
+			<< '\t' << "2. строку [ " << secondLine << " ] размером " << secondLineLength - 1 << " символов.\n";
 		
 		int maxLength = (firstLineLength >= secondLineLength) ? firstLineLength : secondLineLength;
 		result = new char[maxLength];
@@ -126,12 +126,8 @@ int main()
 	return 0;
 }
 
-/// <summary>
-/// Удалить любые вхождения заданного символа из строки
-/// </summary>
-/// <param name="result"> - строка в которой следует удалить символ</param>
-/// <param name="delim"> - символ, который следует удалить</param>
-/// <returns></returns>
+
+// удалить любые вхождения заданного символа из строки
 char * trimCharString(char* result, const char delim)
 {
 	int length = 0;
@@ -178,13 +174,7 @@ char * removeZeroChar(char* result, const int length)
 	return result;
 }
 
-/// <summary>
-/// Сформировать новую строку из символов, общих для двух исходных строк.
-/// </summary>
-/// <param name="result"></param>
-/// <param name="source1"></param>
-/// <param name="source2"></param>
-/// <returns></returns>
+// сформировать новую строку из символов, общих для двух исходных строк.
 char * getSimilarChars(char *result, const char* source1, const char* source2)
 {
 	int i = 0;

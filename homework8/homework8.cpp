@@ -36,7 +36,7 @@ int main()
 		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано. Вы действительно хотите продолжить? (Y/N) ";
 		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
 		char ch = std::cin.get();
-		if (tolower(ch) != 'y') return 0;
+		if ((tolower(ch) != 'y') || (tolower(ch) != 'д')) return 0;
 	}
 
 	int** matrix = nullptr;
@@ -52,6 +52,7 @@ int main()
 	catch (std::bad_alloc& e)
 	{
 		std::cout << "Введён неправильный размер массива!";
+		std::cout << "\n - " << e.what();
 		return -1;
 	}
 
@@ -61,19 +62,21 @@ int main()
 
 	for (size_t i = 0; i < rowCount; i++)
 	{
-		outputStream << "" << matrix[i][0];
+		outputStream << matrix[i][0];
+
 		for (size_t j = 1; j < columnCount; j++)
 		{
 			outputStream << "\t" << matrix[i][j];
-			delete[] matrix[i];
 		}
+		
+		delete[] matrix[i];
 		outputStream << std::endl << std::endl;
 	}
 
 	outputStream.close();
 	delete[] matrix;
 
-	std::cout << "Выходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
+	std::cout << "\nВыходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
 
 	system("pause");
 
@@ -152,4 +155,10 @@ int** getSnake(int** matrix, const int rowCount, const int columnCount)
 		}
 	}
 	return matrix;
+}
+
+int getInput()
+{
+	int 
+
 }
