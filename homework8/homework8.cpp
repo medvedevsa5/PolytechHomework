@@ -1,8 +1,7 @@
 ﻿#include <iostream>
-#include <windows.h>
-#include <cmath>
 #include <string>
 #include <fstream>
+#include <windows.h>
 
 const int ROW_WARNING = 256;
 const int COLUMN_WARNING = 256;
@@ -13,14 +12,58 @@ const std::string OUTPUT_FILE_NAME = "matrix.txt";
 
 const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
 
-int** getSnake(int** matrix, const int rowCount, const int columnCount);
-void writeMatrix(int** matrix, int rowCount, int columnCount);
+void firstTask();
+void secondTask();
 
+int** getSnake(int** matrix, const int rowCount, const int columnCount);
 
 int main()
 {
 	setlocale(LC_ALL, "ru");
 
+	//firstTask();
+
+	secondTask();
+
+	system("pause");
+
+	return 0;
+}
+
+void firstTask() 
+{
+	const int staticRowCount = 5;
+	const int staticColumnCount = 4;
+
+	int staticArray[staticRowCount][staticColumnCount] =
+	{
+		{10, 0, 30, 40},
+		{10, 20, 0, 40},
+		{10, 20, 30, 40},
+		{10, 20, 0, 40},
+		{10, 20, 30, 40}
+	};
+
+	int notZeroColumns = 0;
+
+	for (size_t j = 0; j < staticColumnCount; j++)
+	{
+		notZeroColumns += 1;
+		for (size_t i = 0; i < staticRowCount; i++)
+		{
+			if (staticArray[i][j] == 0)
+			{
+				notZeroColumns -= 1;
+				break;
+			}
+		}
+	}
+
+	std::cout << "Количество ненулевых строк из " << notZeroColumns;
+}
+
+void secondTask()
+{
 	int rowCount = 0;
 	int columnCount = 0;
 	std::string input = "";
@@ -28,20 +71,22 @@ int main()
 	std::cout << "Введите количество срок матрицы: ";
 	std::cin >> input;
 	std::cout << std::endl;
+
 	try
 	{
 		rowCount = std::stoi(input);
 	}
-	catch(std::exception)
+	catch (std::exception)
 	{
 		std::cout << "Количество строк должно быть числом диапазона Int.\n\n";
 		system("pause");
-		return -1;
+		exit(-1);
 	}
 
 	std::cout << "А теперь количество столбцов: ";
 	std::cin >> input;
 	std::cout << std::endl;
+
 	try
 	{
 		columnCount = std::stoi(input);
@@ -50,24 +95,25 @@ int main()
 	{
 		std::cout << "Количество столбцов должно быть числом диапазона Int.\n\n";
 		system("pause");
-		return -1;
+		exit(-1);
 	}
 
-	if(rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
+	if (rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
 	{
 		std::cout << "Вы даже файл открыть свой не сможете...";
-		return -1;
+		exit(-1);
 	}
-	if(rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
+
+	if (rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
 	{
 		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано. Вы действительно хотите продолжить? (Y/N) ";
 		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
-		char ch = std::cin.get();
-		if ((tolower(ch) != 'y')) return 0;
+		char ch = std::tolower(std::cin.get());
+		if (ch != 'y') exit(-1);
+		std::cout << std::endl;
 	}
 
 	int** matrix = nullptr;
-
 	matrix = new int* [rowCount];
 	for (size_t i = 0; i < rowCount; i++)
 	{
@@ -76,28 +122,33 @@ int main()
 
 	matrix = getSnake(matrix, rowCount, columnCount);
 
-	std::cout << "\nМатрица готова. Запись в файл...";
+	std::cout << "Матрица готова. Запись в файл..." << std::endl;
 
-	writeMatrix(matrix, rowCount, columnCount);
+	std::ofstream outputStream(OUTPUT_FILE_NAME);
 
-	std::cout << "\nВыходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
+	for (size_t i = 0; i < rowCount; i++)
+	{
+		for (size_t j = 0; j < columnCount; j++)
+		{
+			outputStream << matrix[i][j] << '\t';
+		}
+		outputStream << std::endl << std::endl;
+	}
+
+	std::cout << "Выходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
 
 	for (size_t i = 0; i < rowCount; i++)
 	{
 		delete[] matrix[i];
 	}
 	delete[] matrix;
-
-	system("pause");
-
-	return 0;
 }
 
 // вернуть спираль из натуральных чисел, расположенных против часовой стрелки по возрастанию
 int** getSnake(int** matrix, const int rowCount, const int columnCount)
 {
 	int emptyElemetsCount = rowCount * columnCount;
-	
+
 	int xCoord = 0;
 	int yCoord = 0;
 
@@ -175,13 +226,6 @@ void writeMatrix(int** matrix, int rowCount, int columnCount)
 
 	GetConsoleScreenBufferInfo(output, &csbi);
 	coord = csbi.dwCursorPosition;
-
-	//int rowCountDepth = 1;
-	//while(rowCount % rowCountDepth != rowCount)
-	//{
-	//	rowCountDepth *= 10;
-	//}
-	//rowCountDepth; 
 
 	int onePercent = rowCount / 100;
 
