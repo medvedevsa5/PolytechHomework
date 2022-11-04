@@ -80,17 +80,14 @@ int main()
 		catch(const std::ios::failure& e)
 		{
 			terminateProgram(ErrorCase::IOError, firstLine, secondLine);
-			return -1;
 		}
 		catch(const std::bad_alloc& e)
 		{
 			terminateProgram(ErrorCase::BadAllocError, firstLine, secondLine);
-			return -1;
 		}
 		catch(const std::exception& e)
 		{
 			terminateProgram(ErrorCase::GeneralError, firstLine, secondLine);
-			return -1;
 		}
 
 		std::cout << "\nВы ввели:\n"

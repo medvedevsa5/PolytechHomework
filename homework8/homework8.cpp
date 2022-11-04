@@ -7,21 +7,71 @@ const int ROW_WARNING = 256;
 const int COLUMN_WARNING = 256;
 const int ROW_MAXIMUM = 16384;
 const int COLUMN_MAXIMUM = 16384;
-
 const std::string OUTPUT_FILE_NAME = "matrix.txt";
-
-const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
+const HANDLE outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void firstTask();
 void secondTask();
-
 int** getSnake(int** matrix, const int rowCount, const int columnCount);
+
+class StatusBar
+{
+	HANDLE _output = 0;
+	COORD _position = { 0, 0 };
+	int _length = 0;
+	char _chunk = '*';
+	int _chunkCount = 0;
+
+public:
+	StatusBar(HANDLE output, COORD position, int length, char chunk = '*')
+	{
+		_output = output;
+		_position = position;
+		_length = length;
+		_chunk = '*';
+	}
+
+	void Draw()
+	{
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(_output, &csbi);
+		COORD previousPosition = csbi.dwCursorPosition;
+
+		SetConsoleCursorPosition(_output, _position);
+		std::cout << "[";
+		_position.X += _length + 1;
+		SetConsoleCursorPosition(_output, _position);
+		std::cout << "]";
+		_position.X -= _length + 1;
+		SetConsoleCursorPosition(_output, previousPosition);
+	}
+
+	void AddChunk(int count)
+	{
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		COORD previousPosition = { 0, 0 };
+		GetConsoleScreenBufferInfo(_output, &csbi);
+		previousPosition = csbi.dwCursorPosition;
+
+		if (_chunkCount < _length)
+		{
+			while (count--) 
+			{
+				_position.X += 1;
+				SetConsoleCursorPosition(_output, _position);
+				std::cout << _chunk;
+				_chunkCount += 1;
+			}
+			SetConsoleCursorPosition(_output, previousPosition);
+		}
+	}
+};
 
 int main()
 {
 	setlocale(LC_ALL, "ru");
 
-	//firstTask();
+	firstTask();
 
 	secondTask();
 
@@ -59,37 +109,44 @@ void firstTask()
 		}
 	}
 
-	std::cout << "Количество ненулевых строк из " << notZeroColumns;
+	std::cout << "Количество ненулевых строк из " << notZeroColumns << std::endl;
 }
 
 void secondTask()
 {
 	int rowCount = 0;
 	int columnCount = 0;
-	std::string input = "";
+	
+	std::ifstream inputFileStream;
+	std::string filePath = "";
+	std::cout << "Введите путь к файлу: ";
+	std::cin >> filePath;
+	inputFileStream.open(filePath);
 
-	std::cout << "Введите количество срок матрицы: ";
-	std::cin >> input;
-	std::cout << std::endl;
+	if(!inputFileStream.is_open())
+	{
+		std::cout << "Не удалось открыть файл";
+		exit(-1);
+	}
 
 	try
 	{
-		rowCount = std::stoi(input);
+		std::string row = "";
+		std::cin >> row;
+		rowCount = std::stoi(row);
 	}
-	catch (std::exception)
+	catch (std::invalid_argument)
 	{
 		std::cout << "Количество строк должно быть числом диапазона Int.\n\n";
 		system("pause");
 		exit(-1);
 	}
 
-	std::cout << "А теперь количество столбцов: ";
-	std::cin >> input;
-	std::cout << std::endl;
-
 	try
 	{
-		columnCount = std::stoi(input);
+		std::string column = "";
+		std::cin >> column;
+		columnCount = std::stoi(column);
 	}
 	catch (std::invalid_argument)
 	{
@@ -106,15 +163,16 @@ void secondTask()
 
 	if (rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
 	{
-		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано. Вы действительно хотите продолжить? (Y/N) ";
+		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано.\n Вы действительно хотите продолжить? (Y/N) ";
 		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
 		char ch = std::tolower(std::cin.get());
 		if (ch != 'y') exit(-1);
+
 		std::cout << std::endl;
 	}
 
-	int** matrix = nullptr;
-	matrix = new int* [rowCount];
+	//--
+	int** matrix = new int* [rowCount];
 	for (size_t i = 0; i < rowCount; i++)
 	{
 		matrix[i] = new int[columnCount];
@@ -122,30 +180,42 @@ void secondTask()
 
 	matrix = getSnake(matrix, rowCount, columnCount);
 
-	std::cout << "Матрица готова. Запись в файл..." << std::endl;
+	std::cout << "Матрица готова. Запись в файл... ";
 
 	std::ofstream outputStream(OUTPUT_FILE_NAME);
+	
+	// получение текущего местоположения курсора
+	CONSOLE_SCREEN_BUFFER_INFO csbi;									
+	GetConsoleScreenBufferInfo(outputHandle, &csbi);					
+	COORD statusPosition = csbi.dwCursorPosition;						
 
-	for (size_t i = 0; i < rowCount; i++)
-	{
-		for (size_t j = 0; j < columnCount; j++)
-		{
-			outputStream << matrix[i][j] << '\t';
-		}
-		outputStream << std::endl << std::endl;
-	}
+	// инициализация полоски со статусом записи в файл 
+	StatusBar* writerStatus = new StatusBar(outputHandle, statusPosition, 20);
+	writerStatus->Draw();
 
-	std::cout << "Выходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
-
-	for (size_t i = 0; i < rowCount; i++)
-	{
-		delete[] matrix[i];
+	// запись матрицы в файл
+	for (size_t i = 0; i < rowCount; i++)								
+	{																
+		if( (i + 1) % (rowCount / 20) == 0)								
+		{																
+			writerStatus->AddChunk(1);									
+		}																
+		for (size_t j = 0; j < columnCount; j++)						
+		{																
+			outputStream << matrix[i][j] << '\t' << '\t';				
+		}																
+		delete[] matrix[i];												
+		outputStream << std::endl << std::endl;							
 	}
 	delete[] matrix;
+	delete writerStatus;
+	outputStream.close();
+
+	std::cout << std::endl<< std::endl << "Выходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
 }
 
 // вернуть спираль из натуральных чисел, расположенных против часовой стрелки по возрастанию
-int** getSnake(int** matrix, const int rowCount, const int columnCount)
+int** getSnake(int** matrix, const int rowCount, const int columnCount) 
 {
 	int emptyElemetsCount = rowCount * columnCount;
 
@@ -216,44 +286,4 @@ int** getSnake(int** matrix, const int rowCount, const int columnCount)
 		}
 	}
 	return matrix;
-}
-
-void writeMatrix(int** matrix, int rowCount, int columnCount)
-{
-	std::ofstream outputStream(OUTPUT_FILE_NAME);
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	COORD coord = {0, 0};
-
-	GetConsoleScreenBufferInfo(output, &csbi);
-	coord = csbi.dwCursorPosition;
-
-	int onePercent = rowCount / 100;
-
-	int outputStringLength = 0;
-
-	for (size_t i = 0; i < rowCount; i++)
-	{
-		if ((onePercent * 10) % (i + 1) == 0)
-		{
-			std::string outputString = std::to_string((int)(100 * (double)i / (double)rowCount)) + "%";
-			coord.X -= outputStringLength - 1;
-			outputStringLength = outputString.length();
-			SetConsoleCursorPosition(output, coord);
-			std::cout << outputString;
-			coord.X += outputStringLength - 1;
-		}
-
-		outputStream << matrix[i][0];
-		for (size_t j = 1; j < columnCount; j++)
-		{
-			outputStream << "\t" << matrix[i][j];
-		}
-		outputStream << std::endl << std::endl;
-	}
-
-	coord.X -= 2;
-	SetConsoleCursorPosition(output, coord);
-	std::cout << "100%" << std::endl;
-
-	outputStream.close();
 }
