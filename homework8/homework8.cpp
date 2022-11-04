@@ -1,4 +1,7 @@
 ﻿#include <iostream>
+#include <windows.h>
+#include <cmath>
+#include <string>
 #include <fstream>
 
 const int ROW_WARNING = 256;
@@ -8,7 +11,11 @@ const int COLUMN_MAXIMUM = 16384;
 
 const std::string OUTPUT_FILE_NAME = "matrix.txt";
 
+const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
+
 int** getSnake(int** matrix, const int rowCount, const int columnCount);
+void writeMatrix(int** matrix, int rowCount, int columnCount);
+
 
 int main()
 {
@@ -16,67 +23,70 @@ int main()
 
 	int rowCount = 0;
 	int columnCount = 0;
+	std::string input = "";
 
 	std::cout << "Введите количество срок матрицы: ";
-	std::cin >> rowCount;
+	std::cin >> input;
 	std::cout << std::endl;
+	try
+	{
+		rowCount = std::stoi(input);
+	}
+	catch(std::exception)
+	{
+		std::cout << "Количество строк должно быть числом диапазона Int.\n\n";
+		system("pause");
+		return -1;
+	}
 
 	std::cout << "А теперь количество столбцов: ";
-	std::cin >> columnCount;
+	std::cin >> input;
 	std::cout << std::endl;
+	try
+	{
+		columnCount = std::stoi(input);
+	}
+	catch (std::invalid_argument)
+	{
+		std::cout << "Количество столбцов должно быть числом диапазона Int.\n\n";
+		system("pause");
+		return -1;
+	}
 
 	if(rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
 	{
 		std::cout << "Вы даже файл открыть свой не сможете...";
 		return -1;
 	}
-
 	if(rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
 	{
 		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано. Вы действительно хотите продолжить? (Y/N) ";
 		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
 		char ch = std::cin.get();
-		if ((tolower(ch) != 'y') || (tolower(ch) != 'д')) return 0;
+		if ((tolower(ch) != 'y')) return 0;
 	}
 
 	int** matrix = nullptr;
 
-	try
+	matrix = new int* [rowCount];
+	for (size_t i = 0; i < rowCount; i++)
 	{
-		matrix = new int* [rowCount];
-		for (size_t i = 0; i < rowCount; i++)
-		{
-			matrix[i] = new int[columnCount];
-		}
-	}
-	catch (std::bad_alloc& e)
-	{
-		std::cout << "Введён неправильный размер массива!";
-		std::cout << "\n - " << e.what();
-		return -1;
+		matrix[i] = new int[columnCount];
 	}
 
 	matrix = getSnake(matrix, rowCount, columnCount);
 
-	std::ofstream outputStream(OUTPUT_FILE_NAME);
+	std::cout << "\nМатрица готова. Запись в файл...";
+
+	writeMatrix(matrix, rowCount, columnCount);
+
+	std::cout << "\nВыходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
 
 	for (size_t i = 0; i < rowCount; i++)
 	{
-		outputStream << matrix[i][0];
-
-		for (size_t j = 1; j < columnCount; j++)
-		{
-			outputStream << "\t" << matrix[i][j];
-		}
-		
 		delete[] matrix[i];
-		outputStream << std::endl << std::endl;
 	}
-
-	outputStream.close();
 	delete[] matrix;
-
-	std::cout << "\nВыходная матрица записана в файл " << OUTPUT_FILE_NAME << std::endl << std::endl;
 
 	system("pause");
 
@@ -157,8 +167,49 @@ int** getSnake(int** matrix, const int rowCount, const int columnCount)
 	return matrix;
 }
 
-int getInput()
+void writeMatrix(int** matrix, int rowCount, int columnCount)
 {
-	int 
+	std::ofstream outputStream(OUTPUT_FILE_NAME);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	COORD coord = {0, 0};
 
+	GetConsoleScreenBufferInfo(output, &csbi);
+	coord = csbi.dwCursorPosition;
+
+	//int rowCountDepth = 1;
+	//while(rowCount % rowCountDepth != rowCount)
+	//{
+	//	rowCountDepth *= 10;
+	//}
+	//rowCountDepth; 
+
+	int onePercent = rowCount / 100;
+
+	int outputStringLength = 0;
+
+	for (size_t i = 0; i < rowCount; i++)
+	{
+		if ((onePercent * 10) % (i + 1) == 0)
+		{
+			std::string outputString = std::to_string((int)(100 * (double)i / (double)rowCount)) + "%";
+			coord.X -= outputStringLength - 1;
+			outputStringLength = outputString.length();
+			SetConsoleCursorPosition(output, coord);
+			std::cout << outputString;
+			coord.X += outputStringLength - 1;
+		}
+
+		outputStream << matrix[i][0];
+		for (size_t j = 1; j < columnCount; j++)
+		{
+			outputStream << "\t" << matrix[i][j];
+		}
+		outputStream << std::endl << std::endl;
+	}
+
+	coord.X -= 2;
+	SetConsoleCursorPosition(output, coord);
+	std::cout << "100%" << std::endl;
+
+	outputStream.close();
 }
