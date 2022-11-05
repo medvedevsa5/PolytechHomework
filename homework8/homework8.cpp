@@ -1,13 +1,17 @@
 ﻿#include <iostream>
 #include <string>
 #include <fstream>
+#include <iterator>
 #include <windows.h>
 
-const int ROW_WARNING = 256;
-const int COLUMN_WARNING = 256;
-const int ROW_MAXIMUM = 16384;
-const int COLUMN_MAXIMUM = 16384;
+const int ROW_WARNING = 1024;
+const int COLUMN_WARNING = 1024;
+const int ROW_MAXIMUM = 4096;
+const int COLUMN_MAXIMUM = 4096;
+
+const std::string INPUT_FILE_NAME = "input.txt";
 const std::string OUTPUT_FILE_NAME = "matrix.txt";
+
 const HANDLE outputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 void firstTask();
@@ -16,19 +20,25 @@ int** getSnake(int** matrix, const int rowCount, const int columnCount);
 
 class StatusBar
 {
+private:
 	HANDLE _output = 0;
 	COORD _position = { 0, 0 };
 	int _length = 0;
-	char _chunk = '*';
-	int _chunkCount = 0;
+	char _piece = '*';
+	int _pieceCount = 0;
 
 public:
-	StatusBar(HANDLE output, COORD position, int length, char chunk = '*')
+	StatusBar(HANDLE output, COORD position, int length, char piece = '*')
 	{
 		_output = output;
 		_position = position;
 		_length = length;
-		_chunk = '*';
+		_piece = piece;
+	}
+
+	int getLength()
+	{
+		return _length;
 	}
 
 	void Draw()
@@ -49,21 +59,17 @@ public:
 	void AddChunk(int count)
 	{
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		COORD previousPosition = { 0, 0 };
 		GetConsoleScreenBufferInfo(_output, &csbi);
-		previousPosition = csbi.dwCursorPosition;
+		COORD previousPosition = csbi.dwCursorPosition;
 
-		if (_chunkCount < _length)
+		while (count-- && _pieceCount < _length)
 		{
-			while (count--) 
-			{
-				_position.X += 1;
-				SetConsoleCursorPosition(_output, _position);
-				std::cout << _chunk;
-				_chunkCount += 1;
-			}
-			SetConsoleCursorPosition(_output, previousPosition);
+			_position.X += 1;
+			SetConsoleCursorPosition(_output, _position);
+			std::cout << _piece;
+			_pieceCount += 1;
 		}
+		SetConsoleCursorPosition(_output, previousPosition);
 	}
 };
 
@@ -82,13 +88,20 @@ int main()
 
 void firstTask() 
 {
-	const int staticRowCount = 5;
+	std::ofstream outputFileStream;
+	outputFileStream.open(OUTPUT_FILE_NAME, std::ios_base::trunc);
+	
+	if(!outputFileStream.is_open())
+	{
+		std::cout << "Не удалось создать файл для вывода";
+	}
+
 	const int staticColumnCount = 4;
 
-	int staticArray[staticRowCount][staticColumnCount] =
+	int staticArray[][staticColumnCount] =
 	{
 		{10, 0, 30, 40},
-		{10, 20, 0, 40},
+		{0, 20, 0, 40},
 		{10, 20, 30, 40},
 		{10, 20, 0, 40},
 		{10, 20, 30, 40}
@@ -99,9 +112,9 @@ void firstTask()
 	for (size_t j = 0; j < staticColumnCount; j++)
 	{
 		notZeroColumns += 1;
-		for (size_t i = 0; i < staticRowCount; i++)
+		for (auto i = std::cbegin(staticArray); i != std::cend(staticArray); ++i)
 		{
-			if (staticArray[i][j] == 0)
+			if ((*i)[j] == 0)
 			{
 				notZeroColumns -= 1;
 				break;
@@ -109,7 +122,8 @@ void firstTask()
 		}
 	}
 
-	std::cout << "Количество ненулевых строк из " << notZeroColumns << std::endl;
+	outputFileStream << "Количество ненулевых строк из встроенного массива - " << notZeroColumns << std::endl << std::endl;
+	outputFileStream.close();
 }
 
 void secondTask()
@@ -117,96 +131,111 @@ void secondTask()
 	int rowCount = 0;
 	int columnCount = 0;
 	
+	// инициализация файлового потока
 	std::ifstream inputFileStream;
 	std::string filePath = "";
-	std::cout << "Введите путь к файлу: ";
-	std::cin >> filePath;
+	std::cout << "Введите путь к файлу с размером матрицы(по умолчанию " << INPUT_FILE_NAME << "): ";
+	std::getline(std::cin, filePath);
+	if(filePath == "")
+	{
+		filePath = INPUT_FILE_NAME;
+	}
+	
 	inputFileStream.open(filePath);
-
 	if(!inputFileStream.is_open())
 	{
 		std::cout << "Не удалось открыть файл";
 		exit(-1);
 	}
 
+	// ввод и проверка ввода на соответствие
 	try
 	{
 		std::string row = "";
-		std::cin >> row;
+		inputFileStream >> row;
 		rowCount = std::stoi(row);
 	}
 	catch (std::invalid_argument)
 	{
-		std::cout << "Количество строк должно быть числом диапазона Int.\n\n";
+		std::cout << "Количество строк должно быть числом диапазона от 1 до IntMax.\n\n";
 		system("pause");
 		exit(-1);
 	}
-
 	try
 	{
 		std::string column = "";
-		std::cin >> column;
+		inputFileStream >> column;
 		columnCount = std::stoi(column);
 	}
 	catch (std::invalid_argument)
 	{
-		std::cout << "Количество столбцов должно быть числом диапазона Int.\n\n";
+		std::cout << "Количество столбцов должно быть числом диапазона от 1 до IntMax.\n\n";
 		system("pause");
 		exit(-1);
 	}
 
-	if (rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
+	inputFileStream.close();
+
+	if (rowCount <= 0 || columnCount <= 0)
 	{
-		std::cout << "Вы даже файл открыть свой не сможете...";
+		std::cout << "Отрицательная длина? Это как?\n\n";
+		system("pause");
 		exit(-1);
 	}
-
+	if (rowCount > ROW_MAXIMUM || columnCount > COLUMN_MAXIMUM)
+	{
+		std::cout << "Вы даже файл открыть свой не сможете...\n\n";
+		system("pause");
+		exit(-1);
+	}
 	if (rowCount > ROW_WARNING || columnCount > COLUMN_WARNING)
 	{
-		std::cout << "Выходной файл будет огромным и вы вряд ли поймёте что в нём написано.\n Вы действительно хотите продолжить? (Y/N) ";
+		std::cout << "\nВыходной файл будет огромным, и вы вряд ли поймёте, что в нём написано.\nВы действительно хотите продолжить? (Y/N) ";
 		std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n');
 		char ch = std::tolower(std::cin.get());
 		if (ch != 'y') exit(-1);
-
 		std::cout << std::endl;
 	}
 
-	//--
+	// инициализация выходной матрицы
 	int** matrix = new int* [rowCount];
 	for (size_t i = 0; i < rowCount; i++)
 	{
 		matrix[i] = new int[columnCount];
 	}
 
+	// получение необходимой матрицы
 	matrix = getSnake(matrix, rowCount, columnCount);
 
 	std::cout << "Матрица готова. Запись в файл... ";
-
-	std::ofstream outputStream(OUTPUT_FILE_NAME);
+	std::ofstream outputStream(OUTPUT_FILE_NAME, std::ios::app);
 	
-	// получение текущего местоположения курсора
+	// получение текущего местоположения каретки
 	CONSOLE_SCREEN_BUFFER_INFO csbi;									
 	GetConsoleScreenBufferInfo(outputHandle, &csbi);					
-	COORD statusPosition = csbi.dwCursorPosition;						
+	COORD cursorPosition = csbi.dwCursorPosition;						
 
 	// инициализация полоски со статусом записи в файл 
-	StatusBar* writerStatus = new StatusBar(outputHandle, statusPosition, 20);
+	StatusBar* writerStatus = new StatusBar(outputHandle, cursorPosition, 20);
+	int statusbarLength = writerStatus->getLength();
+	int chunckSize = (statusbarLength / rowCount) + 1;
 	writerStatus->Draw();
 
 	// запись матрицы в файл
-	for (size_t i = 0; i < rowCount; i++)								
-	{																
-		if( (i + 1) % (rowCount / 20) == 0)								
-		{																
-			writerStatus->AddChunk(1);									
-		}																
-		for (size_t j = 0; j < columnCount; j++)						
-		{																
-			outputStream << matrix[i][j] << '\t' << '\t';				
-		}																
-		delete[] matrix[i];												
-		outputStream << std::endl << std::endl;							
+	for (size_t i = 0; i < rowCount; i++)
+	{
+		if(i % (rowCount / (statusbarLength / chunckSize)) == 0)
+		{
+			writerStatus->AddChunk(chunckSize);
+		}
+		for (size_t j = 0; j < columnCount; j++)
+		{
+			outputStream  << matrix[i][j] << "\t\t";
+		}
+		delete[] matrix[i];
+		outputStream << std::endl << std::endl;	
 	}
+
 	delete[] matrix;
 	delete writerStatus;
 	outputStream.close();

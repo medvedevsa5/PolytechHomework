@@ -79,15 +79,30 @@ int main()
 		}
 		catch(const std::ios::failure& e)
 		{
-			terminateProgram(ErrorCase::IOError, firstLine, secondLine);
+			printError(ErrorCase::IOError);
+			inputFilestream.close();
+			outputFilestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
+			return -1;
 		}
 		catch(const std::bad_alloc& e)
 		{
-			terminateProgram(ErrorCase::BadAllocError, firstLine, secondLine);
+			printError(ErrorCase::BadAllocError);
+			inputFilestream.close();
+			outputFilestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
+			return -1;
 		}
 		catch(const std::exception& e)
 		{
-			terminateProgram(ErrorCase::GeneralError, firstLine, secondLine);
+			printError(ErrorCase::GeneralError);
+			inputFilestream.close();
+			outputFilestream.close();
+			delete[] firstLine;
+			delete[] secondLine;
+			return -1;
 		}
 
 		std::cout << "\nВы ввели:\n"
@@ -212,15 +227,4 @@ void printError(const ErrorCase &error)
 		break;
 	}
 	std::cout << "\n\x1B[31m" << errorString << "\n\033[0m";
-}
-
-void terminateProgram(const ErrorCase &error, char* firstArray, char* secondArray, char* thirdArray)
-{
-	printError(error);
-
-	delete[] firstArray;
-	delete[] secondArray;
-	delete[] thirdArray;
-
-	exit(-1);
 }
