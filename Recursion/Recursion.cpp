@@ -26,7 +26,7 @@ int main()
 		
 		std::cin >> inputNumber;
 
-		if(inputNumber == "quit")
+		if(inputNumber == "quit\0")
 		{
 			delete[] inputNumber;
 			return 0;
