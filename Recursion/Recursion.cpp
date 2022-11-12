@@ -3,13 +3,13 @@
 #include <cstring>
 #include <cctype>
 
-bool isReal(char*& str);
-bool isMantissa(const char*& str);
-bool isExhibitor(const char*& str);
-bool isUnsignedInteger(const char* leftBorder, const char* rightBorder);
-bool isDigit(const char*& str);
-bool isSign(const char*& str);
-char* endOfStr(const char*& str);
+bool isReal(char* str);
+bool isMantissa(char* str, char* EPosition);
+bool isExhibitor(char* str);
+bool isUnsignedInteger(char* leftBorder, char* rightBorder);
+bool isDigit(char* str);
+bool isSign(char* str);
+char* endOfStr(char* str);
 
 const int MAX_INPUT_LENGTH = 256;
 
@@ -18,49 +18,84 @@ int main()
 	std::setlocale(LC_ALL, "Russian");
 	std::cin >> std::setw(MAX_INPUT_LENGTH);
 
-	char* nomber = new char[MAX_INPUT_LENGTH];
+	char* inputNumber = new char[MAX_INPUT_LENGTH];
 
 	for (;;)
 	{
 		std::cout << "Введите вещественное число в экспоненциальной форме записи : ";
 		
-		std::cin >> nomber;
+		std::cin >> inputNumber;
 
-		std::cout << isReal(nomber) ? "Правда\n\n" : "Ложь\n\n";
+		std::cout << (isReal(inputNumber) ? "Число вещественное\n\n" : "Число не вещественное\n\n");
 	}
 
-	delete[] nomber;
+	delete[] inputNumber;
 }
 
-bool isReal(const char *& str)
+bool isReal(char* str)
 {
 	isSign(str);
 
-	return isMantissa(str) && isExhibitor(str) && *str == '\0';
-}
+	char* EString = strstr(str, "E");
 
-bool isMantissa(const char*& str)
-{
-	const char* rightBorder = endOfStr(str);
-	const char* EPosition = str - 1;
-	if (*EPosition == 'E')
+	if (!EString)
 	{
-		return (isSign(str) && (str + 1 != rightBorder)) ? (isUnsignedInteger(str + 1, rightBorder)) : false;
+		return false;
+	}
+	else if (isDigit(str))
+	{
+		return isMantissa(str, EString) && isExhibitor(str);
+	}
+	else
+	{
+		return false;
 	}
 }
 
-bool isExhibitor(const char*& str)
+bool isMantissa(char* str, char* EString)
 {
+	char* dotString = strstr(str, ".");
 
+	if(!dotString)
+	{
+		dotString = EString;
+	}
+
+	if (dotString == EString || dotString + 1 == EString)
+	{
+		return true;
+	}
+	if (isUnsignedInteger(str, dotString) || isUnsignedInteger(dotString + 1, EString))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
-bool isUnsignedInteger(const char* leftBorder, const char* rightBorder)
+bool isExhibitor(char* str)
+{
+	char* rightBorder = endOfStr(str);
+	const char* EPosition = str - 1;
+	if (*EPosition == 'E')
+	{
+		return (isSign(str) and (str + 1 != rightBorder)) ? (isUnsignedInteger(str + 1, rightBorder)) : false;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool isUnsignedInteger(char* leftBorder, char* rightBorder)
 {
 	if (leftBorder == rightBorder)
 	{
 		return true;
 	}
-	if (isdigit(*leftBorder))
+	if (isDigit(leftBorder))
 	{
 		return isUnsignedInteger(leftBorder + 1, rightBorder);
 	}
@@ -70,12 +105,12 @@ bool isUnsignedInteger(const char* leftBorder, const char* rightBorder)
 	}
 }
 
-bool isDigit(const char*& str)
+bool isDigit(char* str)
 {
 	return std::isdigit(*str);
 }
 
-bool isSign(const char*& str)
+bool isSign(char* str)
 {
 	return (*str == '-' || *str == '+');
 }

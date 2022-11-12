@@ -78,6 +78,7 @@ bool isSign(char* num)
     else
         return false;
 }
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
