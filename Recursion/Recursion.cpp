@@ -26,6 +26,14 @@ int main()
 		
 		std::cin >> inputNumber;
 
+		if(inputNumber == "quit")
+		{
+			delete[] inputNumber;
+			return 0;
+		}
+
+		std::cout << std::endl;
+
 		std::cout << (isReal(inputNumber) ? "Число вещественное\n\n" : "Число не вещественное\n\n");
 	}
 
@@ -34,7 +42,7 @@ int main()
 
 bool isReal(char* str)
 {
-	isSign(str);
+	bool isSigned = isSign(str);
 
 	char* EString = strstr(str, "E");
 
@@ -42,9 +50,9 @@ bool isReal(char* str)
 	{
 		return false;
 	}
-	else if (isDigit(str))
+	else if (isDigit(str + isSigned))
 	{
-		return isMantissa(str, EString) && isExhibitor(str);
+		return isMantissa(str + isSigned, EString) && isExhibitor(EString + 1);
 	}
 	else
 	{
@@ -59,13 +67,16 @@ bool isMantissa(char* str, char* EString)
 	if(!dotString)
 	{
 		dotString = EString;
+		if (isUnsignedInteger(str, dotString))
+		{
+			return true;
+		}
 	}
-
-	if (dotString == EString || dotString + 1 == EString)
+	if (dotString + 1 == EString)
 	{
-		return true;
+		return false;
 	}
-	if (isUnsignedInteger(str, dotString) || isUnsignedInteger(dotString + 1, EString))
+	if (isUnsignedInteger(str, dotString) && isUnsignedInteger(dotString + 1, EString))
 	{
 		return true;
 	}
@@ -78,10 +89,10 @@ bool isMantissa(char* str, char* EString)
 bool isExhibitor(char* str)
 {
 	char* rightBorder = endOfStr(str);
-	const char* EPosition = str - 1;
+	char* EPosition = str - 1;
 	if (*EPosition == 'E')
 	{
-		return (isSign(str) and (str + 1 != rightBorder)) ? (isUnsignedInteger(str + 1, rightBorder)) : false;
+		return (isSign(str) && (str + 1) != rightBorder) ? (isUnsignedInteger(str + 1, rightBorder)) : false;
 	}
 	else
 	{
