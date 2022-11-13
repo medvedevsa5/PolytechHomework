@@ -1,95 +1,66 @@
 ﻿#include <iostream>
-#include <iomanip>
+#include <cmath>
 
 
-bool isReal(char* num);
-bool isMantissa(char* num, char* EPosition);
-bool isExponent(char* num);
-bool isUnsignedInt(char* leftBorder, char* rightBorder);
-bool isSign(char* num);
-char* endOfStr(char* num);
+typedef double(*IntegrateFunction)(double);
 
-
-bool isReal(char* num)
+// Метод средних прямоугольников
+double integrateRectangle(IntegrateFunction f, double a, double b, int n)
 {
-    char* EPosition = strstr(num, "E");
-    if (!EPosition)
-        EPosition = strstr(num, "e");
-    if (isdigit(*num) or *num == '.')
-        return (isMantissa(num, EPosition) and isExponent(EPosition + 1));
-    else
-        return false;
+	double sum = 0.0;
+	double step = (b - a) / n;
+	for (int i = 0; i < n; ++i)
+	{
+		sum += f(a + step * (i + 0.5));
+	}
+	return sum * step;
 }
 
-bool isMantissa(char* num, char* EPosition)
+// Точность определяется по правилу Рунге
+// https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%BE_%D0%A0%D1%83%D0%BD%D0%B3%D0%B5
+double integrate(IntegrateFunction f, double a, double b, double error)
 {
-    char* dotPosition = strstr(num, ".");
-    if (dotPosition + 1 == EPosition)
-        return false;
-    if (isUnsignedInt(num, dotPosition) and isUnsignedInt(dotPosition + 1, EPosition))
-        return true;
-    else
-        return false;
+	if (error <= 0)
+	{
+		throw std::invalid_argument("Error should be positive");
+	}
+	const double THETA = 1.0 / 3.0;
+	int nSteps = 1;
+	double res1 = integrateRectangle(f, a, b, nSteps);
+	nSteps *= 2;
+	double res2 = integrateRectangle(f, a, b, nSteps);
+	while (abs(res2 - res1) * THETA > error)
+	{
+		res1 = res2;
+		nSteps *= 2;
+		res2 = integrateRectangle(f, a, b, nSteps);
+	}
+	return res2;
 }
 
-bool isUnsignedInt(char* leftBorder, char* rightBorder)
+double f1(double x)
 {
-    if (leftBorder == rightBorder)
-        return true;
-    if (isdigit(*leftBorder))
-        return isUnsignedInt(leftBorder + 1, rightBorder);
-    else
-        return false;
+	return x * x;
 }
 
-bool isExponent(char* num)
+double f2(double x)
 {
-    char* rightBorder = endOfStr(num);
-    char* EPosition = num - 1;
-    if (*EPosition == 'E')
-    {
-        if (isSign(num) and (num + 1 != rightBorder))
-            return (isUnsignedInt(num + 1, rightBorder));
-        else
-            return false;
-    }
-    else if (*EPosition == 'e')
-    {
-        if (isdigit(*num))
-            return (isUnsignedInt(num, rightBorder));
-        else
-            return false;
-    }
-    else
-        return false;
-}
-
-char* endOfStr(char* num)
-{
-    if (*num == '\0')
-        return (num);
-    return endOfStr(num + 1);
-}
-
-bool isSign(char* num)
-{
-    if (*num == '-' or *num == '+')
-        return true;
-    else
-        return false;
+	return x * x * x;
 }
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-    while (true)
-    {
-        char* num = new char[100]();
-        std::cout << "Введите вещественное число: ";
-        std::cin >> std::setw(100) >> num;
-        if (isReal(num))
-            std::cout << "Это вещественное число\n";
-        else
-            std::cout << "Это не вещественное число\n";
-    }
+	double lower;
+	std::cout << "Lower bound: ";
+	std::cin >> lower;
+	double upper;
+	std::cout << "Upper bound: ";
+	std::cin >> upper;
+	double error;
+	std::cout << "Error: ";
+	std::cin >> error;
+
+	std::cout << "1/x: " << integrate([](double x) { return 1.0 / log(x); }, lower, upper, error) << '\n';
+
+	return 0;
 }
