@@ -7,8 +7,8 @@
 #include <cmath>
 
 const long double MAX_INTERVAL[2] = { -1 + std::numeric_limits<long double>::epsilon(), 1 - std::numeric_limits<long double>::epsilon() };
-
-void printSheet(int** matrix, int columnCount, int rowCount);
+const int MAX_TERM_NUMBER = 10000;
+const int SHEET_WIDTH = 16;
 
 long double getTaylor(long double x, long double absError, int numberMax);
 long double getCoefficient(int x);
@@ -24,14 +24,23 @@ int main()
 	int numberMax = 0;
 	long double interval[2] = { 0, 0 };
 	long double intervalStep = 0;
-	int** matrix = nullptr;
 
 	try
 	{
 		std::cout << "Введите погрешность вычисления: ";
 		std::cin >> absError;
+		if (absError < 0)
+		{
+			std::cout << "Погрешность должна быть больше 0!";
+			return -1;
+		}
 		std::cout << "Введите максимальное число слагаемых ряда: ";
 		std::cin >> numberMax;
+		if (numberMax < 0 || numberMax > MAX_TERM_NUMBER)
+		{
+			std::cout << "Число слагаемых не может быть меньше 0!";
+			return -1;
+		}
 		std::cout << "Введите начало и конец промежутка (включительно): ";
 		std::cin >> interval[0] >> interval[1];
 		if(interval[0] > interval[1]) 
@@ -46,48 +55,60 @@ int main()
 		}
 		std::cout << "Введите шаг интервала: ";
 		std::cin >> intervalStep;
+		if (intervalStep >= 1 || intervalStep <= 0)
+		{
+			std::cout << "Шаг интервала не может быть больше 1 или меньше 0";
+			return -1;
+		}
 	}
-	catch(std::exception e)
+	catch(std::exception& e)
 	{
-		std::cout << "Вы где-то напортачили!";
+		std::cout << "Вы где-то напортачили! - " << e.what();
+		return -1;
 	}
-
-	int sheetWidth = 20;
 
 	
-	std::cout << std::endl << std::setw(sheetWidth - 5) << " x |" << std::setw(sheetWidth) << "using Taylor |" << std::setw(sheetWidth) << "using cmath |" << std::endl;
-	std::cout << std::string(sheetWidth * 3 - 5, '=') << std::endl;
+	std::cout << std::endl << std::setw(SHEET_WIDTH - 5) << " x |" << std::setw(SHEET_WIDTH) << "using Taylor |" << std::setw(SHEET_WIDTH) << "using cmath |" << std::endl;
+	std::cout << std::string(SHEET_WIDTH * 3 - 5, '=') << std::endl;
 
 	for (long double x = interval[0]; x < interval[1]+intervalStep/2; x += intervalStep)
 	{
-		long double taylor = getTaylor(x, absError, numberMax);
-		long double standartLib = (1 / sqrtl(1 - powl(x, 2)));
-
-		std::cout << std::setw(sheetWidth - 5 - 2) << x << " |" << std::setw(sheetWidth - 2) << taylor << " |" << std::setw(sheetWidth - 2) << standartLib << " |" << std::endl;
+		try 
+		{
+			long double taylor = getTaylor(x, absError, numberMax);
+			long double standartLib = (1 / sqrtl(1 - powl(x, 2)));
+		}
+		catch(std::exception& e)
+		{
+			std::cout << e.what();
+		}
+		std::cout << std::setw(SHEET_WIDTH - 5 - 2) << x << " |" << std::setw(SHEET_WIDTH - 2) << taylor << " |" << std::setw(SHEET_WIDTH - 2) << standartLib << " |" << std::endl;
 	}
 }
 
 // вернуть результат 
 long double getTaylor(long double x, long double absError, int numberMax)
 {
-	if (numberMax < 1)
-	{
-		throw std::exception("Количество шагов не может быть меньше 1! ");
-	}
-	if (numberMax == 1)
-	{
-		return 1;
-	}
-	else 
-	{
-		long double coefficient = getCoefficient(numberMax);
-		long double poweredX = getPower(x, (numberMax - 1) * 2);
-		long double member = coefficient * poweredX;
+	int i = 1;
+	long double term = 1;
+	long double result = 0;
 
-		if (abs(member) < absError) member = 0;
-
-		return (member + getTaylor(x, absError, numberMax - 1));
+	while(i < numberMax && getAbs(term) > absError)
+	{
+		long double coefficient = getCoefficient(i);
+		long double poweredX = getPower(x, (i - 1) * 2);
+		term = coefficient * poweredX;
+		result += term;
+		i++;
 	}
+
+	if( i > numberMax)
+	{
+		throw std::exception("Максимальная точность не достигнута!");
+	}
+
+	return result;
+
 }
 
 // вернуть коэффициент перед х
@@ -116,15 +137,4 @@ long double getPower(long double base, int power)
 long double getAbs (long double number)
 {
 	return number >= 0 ? number : -number;
-}
-
-// вывод результатов в виде таблицы
-void printSheet(int** matrix, int columnCount, int rowCount)
-{
-	std::cout << std::setw(10) << " x |" << std::setw(15) << "using Taylor |" << std::setw(15) << "using cmath |" << std::endl;
-	std::cout << std::string(40, '=') << std::endl;
-	for (size_t i = 0; i < columnCount; i++)
-	{
-		std::cout << std::setw(10) << " x |" << std::setw(15) << "using Taylor |" << std::setw(15) << "using cmath |" << std::endl;
-	}
 }
