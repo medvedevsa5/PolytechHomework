@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <cmath>
-
+#include <sstream>
 
 typedef double(*IntegrateFunction)(double);
 
@@ -50,17 +50,24 @@ double f2(double x)
 
 int main()
 {
+
 	double lower;
 	std::cout << "Lower bound: ";
 	std::cin >> lower;
+
 	double upper;
 	std::cout << "Upper bound: ";
 	std::cin >> upper;
+
 	double error;
 	std::cout << "Error: ";
 	std::cin >> error;
 
-	std::cout << "1/x: " << integrate([](double x) { return 1.0 / log(x); }, lower, upper, error) << '\n';
+	IntegrateFunction* hyperbola = new IntegrateFunction([](double x) { return 1.0 / x; });
+
+	std::cout << (* hyperbola)(1) << std::endl;
+
+	std::cout << "1/ln(x): " << integrate([](double x) { return 1.0 / x; }, lower, upper, error) << '\n';
 
 	return 0;
 }

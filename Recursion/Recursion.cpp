@@ -26,12 +26,6 @@ int main()
 		
 		std::cin >> inputNumber;
 
-		if(inputNumber == "quit\0")
-		{
-			delete[] inputNumber;
-			return 0;
-		}
-
 		std::cout << std::endl;
 
 		std::cout << (isReal(inputNumber) ? "Число вещественное\n\n" : "Число не вещественное\n\n");
