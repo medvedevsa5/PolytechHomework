@@ -34,23 +34,25 @@ int main()
 
 	Triangle** triangleArray = new Triangle*[10];
 
-	Point* point1 = new Point(rand() % 101 - 50, rand() % 101 - 50);
-	Point* point2 = new Point(rand() % 101 - 50, rand() % 101 - 50);
-	Point* point3 = new Point(rand() % 101 - 50, rand() % 101 - 50);
+	Point* point1 = new Point(0, 0);
+	Point* point2 = new Point(4, 0);
+	Point* point3 = new Point(0, 3);
+
 	for (size_t i = 0; i < 10; i++)
 	{
 		triangleArray[i] = new Triangle(*point1, *point2, *point3);
 
 	}
-	delete point1;
-	delete point2;
-	delete point3;
+	//delete point1;
+	//delete point2;
+	//delete point3;
 
 	for (int i = 0; i < 10 - 1; i++)
 	{
 		try
 		{
-			std::cout << "Площади " << (triangleArray[i]->isEqual(*triangleArray[i + 1]) ? "равны" : "не равны") << std::endl;
+			bool isEqual = triangleArray[i]->isEqual(*triangleArray[i + 1]);
+			std::cout << (isEqual ? "треугольники равны" : "треугольники не равны") << std::endl;
 		}
 		catch (std::exception e)
 		{

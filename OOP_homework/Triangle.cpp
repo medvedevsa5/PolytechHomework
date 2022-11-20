@@ -66,7 +66,7 @@ void Triangle::setC(const Point& c)
 
 Point* Triangle::getC() const
 {
-	return new Point(*(this->_a));
+	return new Point(*(this->_c));
 }
 
 bool Triangle::isTriangle() const
