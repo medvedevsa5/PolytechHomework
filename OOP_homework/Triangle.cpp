@@ -69,10 +69,9 @@ bool Triangle::isTriangle()
 	double length3 = (this->_c)->getDistance(*_a);
 
 	double lengthArray[3] = { length1, length2, length3 };
-
 	std::sort(std::begin(lengthArray), std::end(lengthArray));
 
-	return !(lengthArray[0] + lengthArray[1] > lengthArray[2]);
+	return lengthArray[0] + lengthArray[1] > lengthArray[2];
 }
 
 void Triangle::move(double k)
@@ -84,6 +83,11 @@ void Triangle::move(double k)
 
 double Triangle::getPerimeter()
 {
+	if(!this->isTriangle())
+	{
+		throw std::exception("Это не треугольник!");
+	}
+
 	double length1 = (this->_a)->getDistance(*_b);
 	double length2 = (this->_b)->getDistance(*_c);
 	double length3 = (this->_c)->getDistance(*_a);
