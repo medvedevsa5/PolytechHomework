@@ -6,7 +6,7 @@
 # Не нужные папки короч
 donut/
 WinProjectDemo/
-VlcProjectDemo/
+VlcPluginDemo/
 
 # TEXT
 *.txt
