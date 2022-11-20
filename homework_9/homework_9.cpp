@@ -2,13 +2,13 @@
 //
 
 #include <iostream>
-#include <string>
 #include <iomanip>
+#include <string>
 #include <cmath>
 
 const long double MAX_INTERVAL[2] = { -1 + std::numeric_limits<long double>::epsilon(), 1 - std::numeric_limits<long double>::epsilon() };
 const int MAX_TERM_NUMBER = 10000;
-const int SHEET_WIDTH = 16;
+const int SHEET_WIDTH = 20;
 
 long double getTaylor(long double x, long double absError, int numberMax);
 long double getCoefficient(int x);
@@ -67,20 +67,22 @@ int main()
 		return -1;
 	}
 
-	
 	std::cout << std::endl << std::setw(SHEET_WIDTH - 5) << " x |" << std::setw(SHEET_WIDTH) << "using Taylor |" << std::setw(SHEET_WIDTH) << "using cmath |" << std::endl;
 	std::cout << std::string(SHEET_WIDTH * 3 - 5, '=') << std::endl;
 
-	for (long double x = interval[0]; x < interval[1]+intervalStep/2; x += intervalStep)
+	for (long double x = interval[0]; x < interval[1] + intervalStep / 2; x += intervalStep)
 	{
+		long double taylor = 0;
+		long double standartLib = 0;
 		try 
 		{
-			long double taylor = getTaylor(x, absError, numberMax);
-			long double standartLib = (1 / sqrtl(1 - powl(x, 2)));
+			taylor = getTaylor(x, absError, numberMax);
+			standartLib = (1 / sqrtl(1 - powl(x, 2)));
 		}
 		catch(std::exception& e)
 		{
 			std::cout << e.what();
+			std::cout << std::setw(SHEET_WIDTH * 3 - 5) << e.what();
 		}
 		std::cout << std::setw(SHEET_WIDTH - 5 - 2) << x << " |" << std::setw(SHEET_WIDTH - 2) << taylor << " |" << std::setw(SHEET_WIDTH - 2) << standartLib << " |" << std::endl;
 	}
@@ -102,7 +104,7 @@ long double getTaylor(long double x, long double absError, int numberMax)
 		i++;
 	}
 
-	if( i > numberMax)
+	if( i >= numberMax )
 	{
 		throw std::exception("Максимальная точность не достигнута!");
 	}
