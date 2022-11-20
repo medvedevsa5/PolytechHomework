@@ -3,12 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Не нужные папки короч
+# Ненужные папки короч
 donut/
 WinProjectDemo/
 VlcPluginDemo/
 
-# TEXT
+# Ненужные файлы короч
+*.7z
 *.txt
 
 # User-specific files
