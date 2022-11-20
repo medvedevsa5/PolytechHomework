@@ -15,6 +15,13 @@ Triangle::Triangle(const Point& a, const Point& b, const Point& c)
 	this->_c = new Point(c);
 }
 
+Triangle::Triangle(double point1[2], double point2[2], double point3[2])
+{
+	this->_a = new Point(point1[0], point1[1]);
+	this->_b = new Point(point2[0], point2[1]);
+	this->_c = new Point(point3[0], point3[1]);
+}
+
 Triangle::Triangle(const Triangle& triangle)
 {
 	this->_a = new Point(*triangle._a);
@@ -62,7 +69,7 @@ Point* Triangle::getC() const
 	return new Point(*(this->_a));
 }
 
-bool Triangle::isTriangle()
+bool Triangle::isTriangle() const
 {
 	double length1 = (this->_a)->getDistance(*_b);
 	double length2 = (this->_b)->getDistance(*_c);
@@ -81,7 +88,7 @@ void Triangle::move(double k)
 	this->_c->move(k);
 }
 
-double Triangle::getPerimeter()
+double Triangle::getPerimeter() const
 {
 	if(!this->isTriangle())
 	{
@@ -95,11 +102,19 @@ double Triangle::getPerimeter()
 	return length1 + length2 + length3;
 }
 
-bool Triangle::isEqual(const Triangle& triangle)
+bool Triangle::isEqual(const Triangle& triangle) const
 {
-	bool isEqualA = this->_a->isEqual(*triangle._a);
-	bool isEqualB = this->_b->isEqual(*triangle._b);
-	bool isEqualC = this->_c->isEqual(*triangle._c);
+	Point* pointA = triangle.getA();
+	Point* pointB = triangle.getB();
+	Point* pointC = triangle.getC();
+
+	bool isEqualA = this->_a->isEqual(*pointA);
+	bool isEqualB = this->_b->isEqual(*pointB);
+	bool isEqualC = this->_c->isEqual(*pointC);
+
+	delete pointA;
+	delete pointB;
+	delete pointC;
 
 	return isEqualA && isEqualB && isEqualC;
 }

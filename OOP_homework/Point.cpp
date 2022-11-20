@@ -40,7 +40,7 @@ void Point::setY(double y)
 
 bool Point::isEqual(const Point& point) const
 {
-	return this->_x == point.getX() && this->_y == point.getY() ? true : false;
+	return this->_x == point.getX() && this->_y == point.getY();
 }
 
 double Point::getDistance(const Point& point) const

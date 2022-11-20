@@ -6,7 +6,9 @@
 #include <string>
 #include <cmath>
 
-const long double MAX_INTERVAL[2] = { -1 + std::numeric_limits<long double>::epsilon(), 1 - std::numeric_limits<long double>::epsilon() };
+const long double MAX_INTERVAL[2] = 
+	{ -1 + std::numeric_limits<long double>::epsilon(), 1 - std::numeric_limits<long double>::epsilon() };
+
 const int MAX_TERM_NUMBER = 10000;
 const int SHEET_WIDTH = 20;
 
@@ -81,10 +83,10 @@ int main()
 		}
 		catch(std::exception& e)
 		{
-			std::cout << e.what();
-			std::cout << std::setw(SHEET_WIDTH * 3 - 5) << e.what();
+			std::cout << std::setw(SHEET_WIDTH - 5 - 2) << x << " |" << std::setw(SHEET_WIDTH * 2 - 2) << e.what() << " |" << std::endl;
+			continue;
 		}
-		std::cout << std::setw(SHEET_WIDTH - 5 - 2) << x << " |" << std::setw(SHEET_WIDTH - 2) << taylor << " |" << std::setw(SHEET_WIDTH - 2) << standartLib << " |" << std::endl;
+		std::cout << std::setw(SHEET_WIDTH - 5 - 2) << x << " |" << std::setw(SHEET_WIDTH - 2) << taylor << " |" << std::setw(SHEET_WIDTH - 2) << standartLib << " |" << std::endl;	
 	}
 }
 
@@ -114,17 +116,17 @@ long double getTaylor(long double x, long double absError, int numberMax)
 }
 
 // вернуть коэффициент перед х
-long double getCoefficient(int numberMax)
+long double getCoefficient(int position)
 {
-	if (numberMax <= 1)
+	if (position <= 1)
 	{
 		return 1;
 	}
 	else
 	{
-		long double numerator = 2 * numberMax - 3;
-		long double denominator = 2 * numberMax - 2;
-		return ((numerator / denominator) * getCoefficient(numberMax - 1));
+		long double numerator = 2 * position - 3;
+		long double denominator = 2 * position - 2;
+		return ((numerator / denominator) * getCoefficient(position - 1));
 	}
 }
 

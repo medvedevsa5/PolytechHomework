@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Point.h"
+#include "Triangle.h"
 
 class Triangle
 {
@@ -12,6 +13,7 @@ private:
 public:
 	Triangle();
 	Triangle(const Point& a, const Point& b, const Point& c);
+	Triangle(double point1[2], double point2[2], double point3[2]);
 	Triangle(const Triangle& triangle);
 	~Triangle();
 
@@ -24,11 +26,11 @@ public:
 	void setC(const Point& c);
 	Point* getC() const;
 
-	bool isTriangle();
+	bool isTriangle() const;
 
 	void move(double k);
 
-	double getPerimeter();
+	double getPerimeter() const;
 
-	bool isEqual(const Triangle& triangle);
+	bool isEqual(const Triangle& triangle) const;
 };
