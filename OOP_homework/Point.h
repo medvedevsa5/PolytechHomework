@@ -12,14 +12,14 @@ public:
 	Point(const Point& point);
 	~Point();
 
-public:
-	double getX() const;
-	void setX(double x);
+	void setX(const double x);
+	void setY(const double y);
 
+	double getX() const;
 	double getY() const;
-	void setY(double y);
 
 	bool isEqual(const Point& point) const;
+
 	double getDistance(const Point& point) const;
 
 	void move(double k);

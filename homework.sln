@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "classwork", "classwork_1\cl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "homework", "homework_7\homework.vcxproj", "{9B27BE04-2477-4788-9772-EA76D5DA2767}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "practicum", "practicum\practicum.vcxproj", "{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "arrows", "recursion_sample\arrows.vcxproj", "{8A204640-1C68-4801-AB92-CB4A6202A03D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "homework_9", "homework_9\homework_9.vcxproj", "{DFB92B13-155F-46FB-8558-3B246F36E1C6}"
@@ -49,14 +47,6 @@ Global
 		{9B27BE04-2477-4788-9772-EA76D5DA2767}.Release|x64.Build.0 = Release|x64
 		{9B27BE04-2477-4788-9772-EA76D5DA2767}.Release|x86.ActiveCfg = Release|Win32
 		{9B27BE04-2477-4788-9772-EA76D5DA2767}.Release|x86.Build.0 = Release|Win32
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Debug|x64.ActiveCfg = Debug|x64
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Debug|x64.Build.0 = Debug|x64
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Debug|x86.ActiveCfg = Debug|Win32
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Debug|x86.Build.0 = Debug|Win32
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Release|x64.ActiveCfg = Release|x64
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Release|x64.Build.0 = Release|x64
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Release|x86.ActiveCfg = Release|Win32
-		{DB1C7861-A7D7-4B7F-B826-AFA4742FBACA}.Release|x86.Build.0 = Release|Win32
 		{8A204640-1C68-4801-AB92-CB4A6202A03D}.Debug|x64.ActiveCfg = Debug|x64
 		{8A204640-1C68-4801-AB92-CB4A6202A03D}.Debug|x64.Build.0 = Debug|x64
 		{8A204640-1C68-4801-AB92-CB4A6202A03D}.Debug|x86.ActiveCfg = Debug|Win32

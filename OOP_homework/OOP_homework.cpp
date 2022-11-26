@@ -1,109 +1,158 @@
-﻿// OOP_homework.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <iostream>
+#include <cmath>
+#include "point.h"
+#include "triangle.h"
 
-#include <iostream>
-#include <iomanip>
-#include <iterator>
-#include "Triangle.h"
-#include "Point.h"
+bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2);
+void output(const Triangle& triangle);
+void wrongInputTerminate();
 
-const double COMPARE_EPSILON = 0.000001;
-
-double getArea(const Triangle& triangle);
-bool isEqualArea(const Triangle** triangleArray, const int length);
-
+const double COMPARISON_EPSILON = 0.000'001;
 
 int main()
 {
 	setlocale(LC_ALL, "ru");
 
-	double coord1[2] = { 0, 0 };
-	double coord2[2] = { 0, 0 };
-	double coord3[2] = { 0, 0 };
+	double coordArray[2] = { 0, 0 };
 
-	//std::cout << "Введите координаты точки a : ";
-	//std::cin >> coord1[0] >> coord1[1];
-	//std::cout << "Введите координаты точки b : ";
-	//std::cin >> coord2[0] >> coord2[1];
-	//std::cout << "Введите координаты точки c : ";
-	//std::cin >> coord3[0] >> coord3[1];
+	Point pointA = Point();
+	Point pointB = Point();
+	Point pointC = Point();
 
-	//Point* point1 = new Point(coord1[0], coord1[1]);
-	//Point* point2 = new Point(coord2[0], coord2[1]);
-	//Point* point3 = new Point(coord3[0], coord3[1]);
+	Triangle* triangle1 = nullptr;
+	Triangle* triangle2 = nullptr;
 
-	Triangle** triangleArray = new Triangle*[10];
+	//-----------------------------------------------------------------
 
-	Point* point1 = new Point(0, 0);
-	Point* point2 = new Point(4, 0);
-	Point* point3 = new Point(0, 3);
+	std::cout << "Введите координаты точки A первого треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
 
-	for (size_t i = 0; i < 10; i++)
-	{
-		triangleArray[i] = new Triangle(*point1, *point2, *point3);
+	if (!std::cin) wrongInputTerminate();
 
-	}
-	//delete point1;
-	//delete point2;
-	//delete point3;
+	pointA.setX(coordArray[0]);
+	pointA.setY(coordArray[1]);
 
-	for (int i = 0; i < 10 - 1; i++)
-	{
-		try
-		{
-			bool isEqual = triangleArray[i]->isEqual(*triangleArray[i + 1]);
-			std::cout << (isEqual ? "треугольники равны" : "треугольники не равны") << std::endl;
-		}
-		catch (std::exception e)
-		{
-			std::cout << "Ошибка!!!! " << e.what();
-		}
-	}
+	std::cout << "Введите координаты точки B первого треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
 
-	for(int i = 0; i < 10; i++)
-	{
-		delete triangleArray[i];
-	}
-	delete[] triangleArray;
+	if (!std::cin) wrongInputTerminate();
 
-}
+	pointB.setX(coordArray[0]);
+	pointB.setY(coordArray[1]);
 
-bool isEqualArea(const Triangle** triangleArray, const int length)
-{
-	bool isEqual = true;
-	bool difference = 0.0;
+	std::cout << "Введите координаты точки C первого треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
 
-	for (size_t i = 0; i < length - 1; i++)
-	{
-		difference = getArea(*triangleArray[i]) - getArea(*triangleArray[i+1]);
-		if(fabs(difference) < COMPARE_EPSILON)
-		{
-			isEqual = false;
-			break;
-		}
-	}
-	return isEqual;
-}
+	if (!std::cin) wrongInputTerminate();
 
-double getArea(const Triangle& triangle)
-{
-	Point* pointA = triangle.getA();
-	Point* pointB = triangle.getB();
-	Point* pointC = triangle.getC();
+	pointC.setX(coordArray[0]);
+	pointC.setY(coordArray[1]);
 
-	double lengthAB = pointA->getDistance(*pointB);
-	double lengthBC = pointB->getDistance(*pointC);
-	double lengthCA = pointC->getDistance(*pointA);
+	triangle1 = new Triangle(pointA, pointB, pointC);
 
-	double halfPerimeter = triangle.getPerimeter() / 2;
+	//-----------------------------------------------------------------
 
-	double area = sqrt(halfPerimeter*(halfPerimeter - lengthAB)*(halfPerimeter - lengthBC)*(halfPerimeter - lengthCA));
+	std::cout << std::endl;
 
-	return area;
-}
+	//-----------------------------------------------------------------
 
-void output(const Triangle** triangleArr, int arrLength)
-{
+	std::cout << "Введите координаты точки A второго треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
+
+	if (!std::cin) wrongInputTerminate();
+
+	pointA.setX(coordArray[0]);
+	pointA.setY(coordArray[1]);
+
+	std::cout << "Введите координаты точки B второго треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
+
+	if (!std::cin) wrongInputTerminate();
+
+	pointB.setX(coordArray[0]);
+	pointB.setY(coordArray[1]);
+
+	std::cout << "Введите координаты точки C второго треугольника: ";
+	std::cin >> coordArray[0] >> coordArray[1];
+
+	if (!std::cin) wrongInputTerminate();
+
+	pointC.setX(coordArray[0]);
+	pointC.setY(coordArray[1]);
+
+	triangle2 = new Triangle(pointA, pointB, pointC);
+
+	//-----------------------------------------------------------------
+
+	std::cout << std::endl;
+
+	std::cout << "Вершины треугольника 1 - ";
+	output(*triangle1);
+	std::cout << std::endl;
 	
+	std::cout << "Вершины треугольника 2 - ";
+	output(*triangle2);
+	std::cout << std::endl << std::endl;
+
+	std::cout << "Треугольники" 
+		<< (triangle1->isEqual(*triangle2) ? " " : " не ") 
+		<< "равны. " << std::endl;
+
+	try
+	{
+		std::cout
+			<< "Периметр треугольника 1 - " << triangle1->getPerimeter()
+			<< ", треугольника 2 - " << triangle2->getPerimeter()
+			<< std::endl;
+
+		std::cout << "Треугольники" 
+			<< (isEqualSquare(*triangle1, *triangle2) ? " " : " не ") 
+			<< "равны по площади. " << std::endl;
+	}
+	catch(std::exception &e)
+	{
+		std::cout << "Ошибка! - " << e.what();
+	}
+
+	delete triangle1;
+	delete triangle2;
 }
 
+bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
+{
+	double firstAB = triangle1.getA().getDistance(triangle1.getB());
+	double firstBC = triangle1.getB().getDistance(triangle1.getC());
+	double firstAC = triangle1.getC().getDistance(triangle1.getA());;
+
+	double firstArea =
+		sqrt(triangle1.getPerimeter() *
+			(triangle1.getPerimeter() - firstAB) *
+			(triangle1.getPerimeter() - firstBC) *
+			(triangle1.getPerimeter() - firstAC));
+
+	double secondAB = triangle2.getA().getDistance(triangle2.getB());
+	double secondBC = triangle2.getB().getDistance(triangle2.getC());;
+	double secondAC = triangle2.getC().getDistance(triangle2.getA());;;
+
+	double secondArea =
+		sqrt(triangle2.getPerimeter() *
+			(triangle2.getPerimeter() - secondAB) *
+			(triangle2.getPerimeter() - secondBC) *
+			(triangle2.getPerimeter() - secondAC));
+
+	return (abs(firstArea - secondArea) < COMPARISON_EPSILON);
+}
+
+void output(const Triangle& triangle)
+{
+	std::cout
+		<< "{" << triangle.getA().getX() << ", " << triangle.getA().getY() << "} "
+		<< "{" << triangle.getB().getX() << ", " << triangle.getB().getY() << "} "
+		<< "{" << triangle.getC().getX() << ", " << triangle.getC().getY() << "} ";
+}
+
+void wrongInputTerminate()
+{
+	std::cerr << "Неверный ввод!";
+	exit(-1);
+}
