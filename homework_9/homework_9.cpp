@@ -112,7 +112,7 @@ long double getTaylor(long double x, long double absError, int numberMax)
 		i++;
 	}
 
-	if( i >= numberMax )
+	if(!getAbs(term) > absError && i >= numberMax )
 	{
 		throw std::exception("Максимальная точность не достигнута!");
 	}
