@@ -26,9 +26,9 @@ Triangle::Triangle(const Triangle& triangle)
 
 Triangle::~Triangle()
 {
-	delete _a;
-	delete _b;
-	delete _c;
+	delete this->_a;
+	delete this->_b;
+	delete this->_c;
 }
 
 void Triangle::setA(const Point& a)
@@ -79,16 +79,22 @@ bool Triangle::isTriangle() const
 
 double Triangle::getPerimeter() const
 {
-	if(!this->isTriangle())
-	{
-		throw std::exception("Не треугольник!");
-	}
-
 	double lengthAB = this->_a->getDistance(*this->_b);
 	double lengthBC = this->_b->getDistance(*this->_c);
 	double lengthCA = this->_c->getDistance(*this->_a);
 
-	return lengthAB + lengthBC + lengthCA;
+	if (!this->isTriangle())
+	{
+		double lengthArray[3] = { lengthAB, lengthBC, lengthCA };
+
+		std::sort(std::begin(lengthArray), std::end(lengthArray));
+
+		return lengthArray[2];
+	}
+	else 
+	{
+		return lengthAB + lengthBC + lengthCA;
+	}
 }
 
 void Triangle::move(double k)

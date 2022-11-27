@@ -5,6 +5,16 @@
 #include <iomanip>
 #include <string>
 #include <cmath>
+#include <unordered_map>
+
+enum ErrorCase
+{
+	ErrorError,
+	TermCountError,
+	IntervalOrderError,
+	IntervalLengthError,
+	StepError
+};
 
 const long double MAX_INTERVAL[2] = 
 	{ -1 + std::numeric_limits<long double>::epsilon(), 1 - std::numeric_limits<long double>::epsilon() };
@@ -16,6 +26,8 @@ long double getTaylor(long double x, long double absError, int numberMax);
 long double getCoefficient(int x);
 long double getPower(long double base, int power);
 long double getAbs(long double number);
+
+void terminateWithError(const ErrorCase& error);
 
 // --------------------------------------------------------------------------------
 // Всё ненужное удалил, но, что насчёт 1 пункта - оказывается, всё и так работало.
@@ -38,36 +50,25 @@ int main()
 		std::cout << "Введите погрешность вычисления: ";
 		std::cin >> absError;
 		if (absError < 0)
-		{
-			std::cout << "Погрешность должна быть больше 0!";
-			return -1;
-		}
+			terminateWithError(ErrorCase::ErrorError);
+
 		std::cout << "Введите максимальное число слагаемых ряда: ";
 		std::cin >> numberMax;
 		if (numberMax < 0 || numberMax > MAX_TERM_NUMBER)
-		{
-			std::cout << "Число слагаемых не может быть меньше 0!";
-			return -1;
-		}
+			terminateWithError(ErrorCase::TermCountError);
+
 		std::cout << "Введите начало и конец промежутка (включительно): ";
 		std::cin >> interval[0] >> interval[1];
 		if(interval[0] > interval[1]) 
-		{
-			std::cout << "Начало не может быть больше конца!";
-			return -1;
-		}
+			terminateWithError(ErrorCase::IntervalLengthError);
+
 		if(interval[0] < MAX_INTERVAL[0] || interval[1] > MAX_INTERVAL[1])
-		{
-			std::cout << "Неразрешённый промежуток!";
-			return -1;
-		}
+			terminateWithError(ErrorCase::IntervalOrderError);
+
 		std::cout << "Введите шаг интервала: ";
 		std::cin >> intervalStep;
 		if (intervalStep >= 1 || intervalStep <= 0)
-		{
-			std::cout << "Шаг интервала не может быть больше 1 или меньше 0";
-			return -1;
-		}
+			terminateWithError(ErrorCase::StepError);
 	}
 	catch(std::exception& e)
 	{
@@ -107,6 +108,7 @@ long double getTaylor(long double x, long double absError, int numberMax)
 	{
 		long double coefficient = getCoefficient(i);
 		long double poweredX = getPower(x, (i - 1) * 2);
+
 		term = coefficient * poweredX;
 		result += term;
 		i++;
@@ -147,4 +149,39 @@ long double getPower(long double base, int power)
 long double getAbs (long double number)
 {
 	return number >= 0 ? number : -number;
+}
+
+void terminateWithError(const ErrorCase& error)
+{
+	std::string errorMessage = "";
+
+	switch (error)
+	{
+	case ErrorCase::ErrorError:
+		errorMessage = "Погрешность должна быть больше 0!";
+		break;
+	case ErrorCase::TermCountError:
+		errorMessage = "Число слагаемых не может быть меньше 0!";
+		break;
+	case ErrorCase::IntervalOrderError:
+		errorMessage = "Начало не может быть больше конца!";
+		break;
+	case ErrorCase::IntervalLengthError:
+		errorMessage = "Неразрешённый промежуток!";
+		break;
+	case ErrorCase::StepError:
+		errorMessage = "Шаг интервала не может быть больше 1 или меньше 0";
+		break;
+	default:
+		errorMessage = "Произошла непредвиденная ошибка!";
+		break;
+	}
+
+	std::hash<std::string> hashGenerator;
+
+	size_t stringHash = hashGenerator(errorMessage);
+
+	std::cout << "Ошибка! - " << errorMessage;
+
+	exit(stringHash);
 }

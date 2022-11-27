@@ -118,27 +118,34 @@ int main()
 	delete triangle2;
 }
 
+
+// расчёт площади по формуле Герона 
+// https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%93%D0%B5%D1%80%D0%BE%D0%BD%D0%B0
 bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
 {
 	double firstAB = triangle1.getA().getDistance(triangle1.getB());
 	double firstBC = triangle1.getB().getDistance(triangle1.getC());
-	double firstAC = triangle1.getC().getDistance(triangle1.getA());;
+	double firstAC = triangle1.getC().getDistance(triangle1.getA());
+
+	double firstHalfPerimeter = triangle1.getPerimeter() / 2;
 
 	double firstArea =
-		sqrt(triangle1.getPerimeter() *
-			(triangle1.getPerimeter() - firstAB) *
-			(triangle1.getPerimeter() - firstBC) *
-			(triangle1.getPerimeter() - firstAC));
+		sqrt(firstHalfPerimeter *
+			(firstHalfPerimeter - firstAB) *
+			(firstHalfPerimeter - firstBC) *
+			(firstHalfPerimeter - firstAC));
 
 	double secondAB = triangle2.getA().getDistance(triangle2.getB());
-	double secondBC = triangle2.getB().getDistance(triangle2.getC());;
-	double secondAC = triangle2.getC().getDistance(triangle2.getA());;;
+	double secondBC = triangle2.getB().getDistance(triangle2.getC());
+	double secondAC = triangle2.getC().getDistance(triangle2.getA());
+
+	double secondHalfPerimeter = triangle2.getPerimeter() / 2;
 
 	double secondArea =
-		sqrt(triangle2.getPerimeter() *
-			(triangle2.getPerimeter() - secondAB) *
-			(triangle2.getPerimeter() - secondBC) *
-			(triangle2.getPerimeter() - secondAC));
+		sqrt(secondHalfPerimeter *
+			(secondHalfPerimeter - secondAB) *
+			(secondHalfPerimeter - secondBC) *
+			(secondHalfPerimeter - secondAC));
 
 	return (abs(firstArea - secondArea) < COMPARISON_EPSILON);
 }
