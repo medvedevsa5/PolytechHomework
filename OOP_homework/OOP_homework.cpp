@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <cmath>
-#include "point.h"
-#include "triangle.h"
+#include "Point.h"
+#include "Triangle.h"
 
 bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2);
 void output(const Triangle& triangle);
@@ -124,21 +124,25 @@ bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
 	double firstBC = triangle1.getB().getDistance(triangle1.getC());
 	double firstAC = triangle1.getC().getDistance(triangle1.getA());;
 
+	double firstHalfPerimeter = triangle1.getPerimeter() / 2;
+
 	double firstArea =
-		sqrt(triangle1.getPerimeter() *
-			(triangle1.getPerimeter() - firstAB) *
-			(triangle1.getPerimeter() - firstBC) *
-			(triangle1.getPerimeter() - firstAC));
+		sqrt(firstHalfPerimeter *
+			(firstHalfPerimeter - firstAB) *
+			(firstHalfPerimeter - firstBC) *
+			(firstHalfPerimeter - firstAC));
 
 	double secondAB = triangle2.getA().getDistance(triangle2.getB());
 	double secondBC = triangle2.getB().getDistance(triangle2.getC());;
 	double secondAC = triangle2.getC().getDistance(triangle2.getA());;;
 
+	double secondHalfPerimeter = triangle2.getPerimeter() / 2;
+
 	double secondArea =
-		sqrt(triangle2.getPerimeter() *
-			(triangle2.getPerimeter() - secondAB) *
-			(triangle2.getPerimeter() - secondBC) *
-			(triangle2.getPerimeter() - secondAC));
+		sqrt(secondHalfPerimeter *
+			(secondHalfPerimeter - secondAB) *
+			(secondHalfPerimeter - secondBC) *
+			(secondHalfPerimeter - secondAC));
 
 	return (abs(firstArea - secondArea) < COMPARISON_EPSILON);
 }
