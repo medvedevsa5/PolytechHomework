@@ -7,7 +7,7 @@ bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2);
 void output(const Triangle& triangle);
 void wrongInputTerminate();
 
-const double COMPARISON_EPSILON = 0.000'001;
+const double COMPARISON_EPSILON = 0.00'000'1;
 
 int main()
 {

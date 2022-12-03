@@ -23,4 +23,16 @@ public:
 	double getDistance(const Point& point) const;
 
 	void move(double k);
+
+	
+
+	bool operator==(const Point& right) const;
+
+	bool operator<(const Point& right) const;
+
+	bool operator>=(const Point& right) const;
+
+	Point operator+(const double k) const;
+	
+	Point operator+=(const Point& right);
 };

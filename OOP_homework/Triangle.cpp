@@ -5,70 +5,70 @@
 
 Triangle::Triangle()
 {
-	this->_a = new Point();
-	this->_b = new Point();
-	this->_c = new Point();
+	this->a_ = new Point();
+	this->b_ = new Point();
+	this->c_ = new Point();
 }
 
 Triangle::Triangle(const Point& a, const Point& b, const Point& c)
 {
-	this->_a = new Point(a);
-	this->_b = new Point(b);
-	this->_c = new Point(c);
+	this->a_ = new Point(a);
+	this->b_ = new Point(b);
+	this->c_ = new Point(c);
 }
 
 Triangle::Triangle(const Triangle& triangle)
 {
-	this->_a = new Point(*triangle._a);
-	this->_b = new Point(*triangle._b);
-	this->_c = new Point(*triangle._c);
+	this->a_ = new Point(*triangle.a_);
+	this->b_ = new Point(*triangle.b_);
+	this->c_ = new Point(*triangle.c_);
 }
 
 Triangle::~Triangle()
 {
-	delete this->_a;
-	delete this->_b;
-	delete this->_c;
+	delete this->a_;
+	delete this->b_;
+	delete this->c_;
 }
 
 void Triangle::setA(const Point& a)
 {
-	this->_a->setX(a.getX());
-	this->_a->setY(a.getY());
+	this->a_->setX(a.getX());
+	this->a_->setY(a.getY());
 }
 
 void Triangle::setB(const Point& b)
 {
-	this->_b->setX(b.getX());
-	this->_b->setY(b.getY());
+	this->b_->setX(b.getX());
+	this->b_->setY(b.getY());
 }
 
 void Triangle::setC(const Point& c)
 {
-	this->_c->setX(c.getX());
-	this->_c->setY(c.getY());
+	this->c_->setX(c.getX());
+	this->c_->setY(c.getY());
 }
 
 Point Triangle::getA() const
 {
-	return Point(*_a);
+	return Point(*a_);
 }
 
 Point Triangle::getB() const
 {
-	return Point(*_b);
+	return Point(*b_);
 }
 
 Point Triangle::getC() const
 {
-	return Point(*_c);
+	return Point(*c_);
 }
 
 bool Triangle::isTriangle() const
 {
-	double lengthAB = this->_a->getDistance(*this->_b);
-	double lengthBC = this->_b->getDistance(*this->_c);
-	double lengthCA = this->_c->getDistance(*this->_a);
+	double lengthAB = this->a_->getDistance(this->getA());
+	double lengthBC = this->b_->getDistance(this->getB());
+	double lengthCA = this->c_->getDistance(this->getC());
 
 	double lengthArray[3] = { lengthAB, lengthBC, lengthCA };
 
@@ -79,19 +79,15 @@ bool Triangle::isTriangle() const
 
 double Triangle::getPerimeter() const
 {
-	double lengthAB = this->_a->getDistance(*this->_b);
-	double lengthBC = this->_b->getDistance(*this->_c);
-	double lengthCA = this->_c->getDistance(*this->_a);
+	double lengthAB = this->a_->getDistance(*this->b_);
+	double lengthBC = this->b_->getDistance(*this->c_);
+	double lengthCA = this->c_->getDistance(*this->a_);
 
 	if (!this->isTriangle())
 	{
-		double lengthArray[3] = { lengthAB, lengthBC, lengthCA };
-
-		std::sort(std::begin(lengthArray), std::end(lengthArray));
-
-		return lengthArray[2];
+		return std::max(lengthAB, std::max(lengthBC, lengthCA));
 	}
-	else 
+	else
 	{
 		return lengthAB + lengthBC + lengthCA;
 	}
@@ -99,14 +95,14 @@ double Triangle::getPerimeter() const
 
 void Triangle::move(double k)
 {
-	this->_a->move(k);
-	this->_b->move(k);
-	this->_c->move(k);
+	this->a_->move(k);
+	this->b_->move(k);
+	this->c_->move(k);
 }
 
 bool Triangle::isEqual(const Triangle& triangle) const
 {
-	return this->_a->isEqual(triangle.getA()) 
-		&& this->_b->isEqual(triangle.getB()) 
-		&& this->_c->isEqual(triangle.getC());
+	return this->a_->isEqual(triangle.getA()) 
+		&& this->b_->isEqual(triangle.getB()) 
+		&& this->c_->isEqual(triangle.getC());
 }

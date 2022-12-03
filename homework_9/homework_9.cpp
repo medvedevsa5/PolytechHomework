@@ -60,10 +60,10 @@ int main()
 		std::cout << "Введите начало и конец промежутка (включительно): ";
 		std::cin >> interval[0] >> interval[1];
 		if(interval[0] > interval[1]) 
-			terminateWithError(ErrorCase::IntervalLengthError);
+			terminateWithError(ErrorCase::IntervalOrderError);
 
 		if(interval[0] < MAX_INTERVAL[0] || interval[1] > MAX_INTERVAL[1])
-			terminateWithError(ErrorCase::IntervalOrderError);
+			terminateWithError(ErrorCase::IntervalLengthError);
 
 		std::cout << "Введите шаг интервала: ";
 		std::cin >> intervalStep;
@@ -114,7 +114,7 @@ long double getTaylor(long double x, long double absError, int numberMax)
 		i++;
 	}
 
-	if(!getAbs(term) > absError && i >= numberMax )
+	if(getAbs(term) < absError && i >= numberMax )
 	{
 		throw std::exception("Максимальная точность не достигнута!");
 	}
