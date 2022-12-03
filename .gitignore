@@ -9,6 +9,7 @@ WinProjectDemo/
 VlcPluginDemo/
 
 # Ненужные файлы короч
+*.rar
 *.7z
 *.txt
 
