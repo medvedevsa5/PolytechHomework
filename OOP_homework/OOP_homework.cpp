@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <cmath>
-#include "point.h"
-#include "triangle.h"
+#include "Point.h"
+#include "Triangle.h"
 
 bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2);
 void output(const Triangle& triangle);
@@ -129,6 +129,8 @@ bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
 
 	double firstHalfPerimeter = triangle1.getPerimeter() / 2;
 
+	double firstHalfPerimeter = triangle1.getPerimeter() / 2;
+
 	double firstArea =
 		sqrt(firstHalfPerimeter *
 			(firstHalfPerimeter - firstAB) *
@@ -138,6 +140,8 @@ bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
 	double secondAB = triangle2.getA().getDistance(triangle2.getB());
 	double secondBC = triangle2.getB().getDistance(triangle2.getC());
 	double secondAC = triangle2.getC().getDistance(triangle2.getA());
+
+	double secondHalfPerimeter = triangle2.getPerimeter() / 2;
 
 	double secondHalfPerimeter = triangle2.getPerimeter() / 2;
 
