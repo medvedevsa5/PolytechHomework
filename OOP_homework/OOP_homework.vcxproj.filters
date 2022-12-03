@@ -18,14 +18,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OOP_homework.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Point.cpp">
       <Filter>Исходные файлы\classFolder</Filter>
     </ClCompile>
     <ClCompile Include="Triangle.cpp">
       <Filter>Исходные файлы\classFolder</Filter>
+    </ClCompile>
+    <ClCompile Include="OOP_homework.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

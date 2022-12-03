@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 class Point
 {
 private:
@@ -24,7 +26,6 @@ public:
 
 	void move(double k);
 
-	
 
 	bool operator==(const Point& right) const;
 
@@ -34,5 +35,9 @@ public:
 
 	Point operator+(const double k) const;
 	
-	Point operator+=(const Point& right);
+	Point& operator+=(double k);
+
+	friend std::ostream& operator<<(std::ostream& output, Point& point);
+
+	friend std::istream& operator>>(std::istream& input, Point& point);
 };

@@ -1,7 +1,9 @@
-#include "triangle.h"
-#include "point.h"
+#include "Triangle.h"
+#include "Point.h"
 #include <cmath>
 #include <algorithm>
+
+const double COMPARISON_EPSILON = 0.000001;
 
 Triangle::Triangle()
 {
@@ -93,6 +95,24 @@ double Triangle::getPerimeter() const
 	}
 }
 
+// Расчёт площади по формуле Герона.
+double Triangle::getArea() const
+{
+	double sideAB = this->getA().getDistance(this->getB());
+	double sideBC = this->getB().getDistance(this->getC());
+	double sideAC = this->getC().getDistance(this->getA());
+
+	double halfPerimeter = this->getPerimeter() / 2;
+
+	double area =
+		sqrt(halfPerimeter *
+			(halfPerimeter - sideAB) *
+			(halfPerimeter - sideBC) *
+			(halfPerimeter - sideAC));
+
+	return area;
+}
+
 void Triangle::move(double k)
 {
 	this->a_->move(k);
@@ -105,4 +125,66 @@ bool Triangle::isEqual(const Triangle& triangle) const
 	return this->a_->isEqual(triangle.getA()) 
 		&& this->b_->isEqual(triangle.getB()) 
 		&& this->c_->isEqual(triangle.getC());
+}
+
+void Triangle::operator=(const Triangle& triangle)
+{
+}
+
+bool Triangle::operator==(const Triangle& triangle)
+{
+	return this->isEqual(triangle);
+}
+
+bool Triangle::operator<(const Triangle& triangle)
+{
+	double firstArea = this->getArea();
+	double seconArea = triangle.getArea();
+
+	return std::abs(firstArea - seconArea) < COMPARISON_EPSILON;
+}
+
+Triangle Triangle::operator+(double k)
+{
+	return Triangle(*this->a_ + k, *this->b_ + k, *this->c_ + k);
+}
+
+Triangle& Triangle::operator+=(const double k)
+{
+	*this->a_ += k;
+	*this->b_ += k;
+	*this->c_ += k;
+
+	return *this;
+}
+
+std::ostream& operator<<(std::ostream& output, const Triangle& triangle)
+{
+	Point* point = new Point(triangle.getA());
+	output << point;
+	output << ", ";
+
+	delete point;
+	point = new Point(triangle.getB());
+
+	output << point;
+	output << ", ";
+
+	delete point;
+	point = new Point(triangle.getC());
+
+	output << point;
+	
+	delete point;
+
+	return output;
+}
+
+std::istream& operator>>(std::istream& input, Triangle& triangle)
+{
+	input >> *triangle.a_;
+	input >> *triangle.b_;
+	input >> *triangle.c_;
+
+	return input;
 }

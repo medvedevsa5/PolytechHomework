@@ -1,4 +1,4 @@
-#include "point.h"
+#include "Point.h"
 #include <cmath>
 
 const double COMPARISON_EPSILON = 0.000001;
@@ -95,7 +95,32 @@ bool Point::operator>=(const Point& right) const
 
 Point Point::operator+(const double k) const
 {
-
-	return Point();
+	return Point(this->getX() + k, this->getY() + k);
 }
 
+Point& Point::operator+=(double k)
+{
+	this->setX(this->getX() + k);
+	this->setY(this->getY() + k);
+
+	return *this;
+}
+
+std::ostream& operator<<(std::ostream& output, Point& point)
+{
+	output << "[" << " " << point.getX() << ", " << point.getY() << " " << "]";
+	return output;
+}
+
+std::istream& operator>>(std::istream& input, Point& point)
+{
+	double x = 0;
+	double y = 0;
+
+	input >> x >> y;
+
+	point.setX(x);
+	point.setX(y);
+
+	return input;
+}

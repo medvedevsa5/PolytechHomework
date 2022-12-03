@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Point.h"
 
 
@@ -27,7 +28,23 @@ public:
 
 	double getPerimeter() const;
 
+	double getArea() const;
+
 	void move(double k);
 
 	bool isEqual(const Triangle& triangle) const;
+
+	void operator=(const Triangle& triangle);
+
+	bool operator==(const Triangle& triangle);
+
+	bool operator<(const Triangle& triangle);
+
+	Triangle operator+(const double k);
+
+	Triangle& operator+=(const double k);
+
+	friend std::ostream& operator<<(std::ofstream& output, const Triangle& triangle);
+
+	friend std::istream& operator>>(std::istream& input, Triangle& triangle);
 };
