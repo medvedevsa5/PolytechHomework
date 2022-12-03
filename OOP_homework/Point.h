@@ -3,8 +3,8 @@
 class Point
 {
 private:
-	double _x;
-	double _y;
+	double x_;
+	double y_;
 
 public:
 	Point();

@@ -66,9 +66,9 @@ Point Triangle::getC() const
 
 bool Triangle::isTriangle() const
 {
-	double lengthAB = this->a_->getDistance(this->getA());
-	double lengthBC = this->b_->getDistance(this->getB());
-	double lengthCA = this->c_->getDistance(this->getC());
+	double lengthAB = this->a_->getDistance(this->getB());
+	double lengthBC = this->b_->getDistance(this->getC());
+	double lengthCA = this->c_->getDistance(this->getA());
 
 	double lengthArray[3] = { lengthAB, lengthBC, lengthCA };
 
@@ -79,9 +79,9 @@ bool Triangle::isTriangle() const
 
 double Triangle::getPerimeter() const
 {
-	double lengthAB = this->a_->getDistance(*this->b_);
-	double lengthBC = this->b_->getDistance(*this->c_);
-	double lengthCA = this->c_->getDistance(*this->a_);
+	double lengthAB = this->a_->getDistance(this->getB());
+	double lengthBC = this->b_->getDistance(this->getC());
+	double lengthCA = this->c_->getDistance(this->getA());
 
 	if (!this->isTriangle())
 	{

@@ -5,9 +5,9 @@
 class Triangle
 {
 private:
-	Point* _a;
-	Point* _b;
-	Point* _c;
+	Point* a_;
+	Point* b_;
+	Point* c_;
 
 public:
 	Triangle();
