@@ -13,6 +13,9 @@ int main()
 {
 	setlocale(LC_ALL, "ru");
 
+	FILE* stream;
+	freopen_s(&stream, "output.txt", "w", stderr);
+
 	double coordArray[2] = { 0, 0 };
 
 	Triangle* triangle1 = new Triangle();
