@@ -2,6 +2,7 @@
 
 #include "Point.h"
 
+#include <iosfwd>
 
 class Triangle
 {
@@ -44,7 +45,7 @@ public:
 
 	Triangle& operator+=(const double k);
 
-	friend std::ostream& operator<<(std::ofstream& output, const Triangle& triangle);
+	friend std::ostream& operator<<(std::ostream& output, const Triangle& triangle);
 
 	friend std::istream& operator>>(std::istream& input, Triangle& triangle);
 };

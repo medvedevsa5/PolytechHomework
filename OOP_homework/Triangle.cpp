@@ -1,5 +1,6 @@
 #include "Triangle.h"
 #include "Point.h"
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 
@@ -7,6 +8,7 @@ const double COMPARISON_EPSILON = 0.000001;
 
 Triangle::Triangle()
 {
+	std::cerr << std::endl << "Вызов конструктора Triangle" << std::endl;
 	this->a_ = new Point();
 	this->b_ = new Point();
 	this->c_ = new Point();
@@ -14,6 +16,7 @@ Triangle::Triangle()
 
 Triangle::Triangle(const Point& a, const Point& b, const Point& c)
 {
+	std::cerr << std::endl << "Вызов конструктора Triangle" << std::endl;
 	this->a_ = new Point(a);
 	this->b_ = new Point(b);
 	this->c_ = new Point(c);
@@ -21,6 +24,7 @@ Triangle::Triangle(const Point& a, const Point& b, const Point& c)
 
 Triangle::Triangle(const Triangle& triangle)
 {
+	std::cerr << std::endl << "Вызов конструктора Triangle" << std::endl;
 	this->a_ = new Point(*triangle.a_);
 	this->b_ = new Point(*triangle.b_);
 	this->c_ = new Point(*triangle.c_);
@@ -28,6 +32,7 @@ Triangle::Triangle(const Triangle& triangle)
 
 Triangle::~Triangle()
 {
+	std::cerr << std::endl << "Вызов деструктора Triangle" << std::endl;
 	delete this->a_;
 	delete this->b_;
 	delete this->c_;
@@ -161,19 +166,19 @@ Triangle& Triangle::operator+=(const double k)
 std::ostream& operator<<(std::ostream& output, const Triangle& triangle)
 {
 	Point* point = new Point(triangle.getA());
-	output << point;
+	output << *point;
 	output << ", ";
 
 	delete point;
 	point = new Point(triangle.getB());
 
-	output << point;
+	output << *point;
 	output << ", ";
 
 	delete point;
 	point = new Point(triangle.getC());
 
-	output << point;
+	output << *point;
 	
 	delete point;
 

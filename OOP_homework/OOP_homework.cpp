@@ -131,10 +131,7 @@ bool isEqualSquare(const Triangle& triangle1, const Triangle& triangle2)
 
 void output(const Triangle& triangle)
 {
-	std::cout
-		<< "{" << triangle.getA().getX() << ", " << triangle.getA().getY() << "} "
-		<< "{" << triangle.getB().getX() << ", " << triangle.getB().getY() << "} "
-		<< "{" << triangle.getC().getX() << ", " << triangle.getC().getY() << "} ";
+	std::cout << triangle;
 }
 
 

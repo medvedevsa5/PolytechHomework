@@ -1,21 +1,23 @@
 #include "Point.h"
 #include <cmath>
+#include <iostream>
 
 const double COMPARISON_EPSILON = 0.000001;
 
 Point::Point()
 {
+	std::cerr << std::endl << "Вызов конструктора Point" << std::endl;
 	x_ = 0;
 	y_ = 0;
 }
 
-Point::Point(double x, double y)
+Point::Point(double x, double y) : Point::Point()
 {
 	this->x_ = x;
 	this->y_ = y;
 }
 
-Point::Point(const Point& point)
+Point::Point(const Point& point) : Point::Point()
 {
 	this->x_ = point.x_;
 	this->y_ = point.y_;
@@ -23,6 +25,7 @@ Point::Point(const Point& point)
 
 Point::~Point()
 {
+	std::cerr << std::endl << "Вызов деструктора Point" << std::endl;
 }
 
 void Point::setX(const double x)
