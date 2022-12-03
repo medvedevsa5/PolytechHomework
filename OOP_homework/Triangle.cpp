@@ -187,6 +187,7 @@ std::ostream& operator<<(std::ostream& output, const Triangle& triangle)
 
 std::istream& operator>>(std::istream& input, Triangle& triangle)
 {
+
 	input >> *triangle.a_;
 	input >> *triangle.b_;
 	input >> *triangle.c_;

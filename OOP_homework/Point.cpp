@@ -123,7 +123,7 @@ std::istream& operator>>(std::istream& input, Point& point)
 	input >> x >> y;
 
 	point.setX(x);
-	point.setX(y);
+	point.setY(y);
 
 	return input;
 }

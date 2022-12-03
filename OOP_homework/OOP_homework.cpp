@@ -15,84 +15,25 @@ int main()
 
 	double coordArray[2] = { 0, 0 };
 
-	Point pointA = Point();
-	Point pointB = Point();
-	Point pointC = Point();
+	Triangle* triangle1 = new Triangle();
+	Triangle* triangle2 = new Triangle();
 
-	Triangle* triangle1 = nullptr;
-	Triangle* triangle2 = nullptr;
-
-	//-----------------------------------------------------------------
-
-	std::cout << "Введите координаты точки A первого треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
+	std::cout << "Введите шесть координат 1 треугольника: ";
+	std::cin >> *triangle1;
 	if (!std::cin) wrongInputTerminate();
-
-	pointA.setX(coordArray[0]);
-	pointA.setY(coordArray[1]);
-
-	std::cout << "Введите координаты точки B первого треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
-	if (!std::cin) wrongInputTerminate();
-
-	pointB.setX(coordArray[0]);
-	pointB.setY(coordArray[1]);
-
-	std::cout << "Введите координаты точки C первого треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
-	if (!std::cin) wrongInputTerminate();
-
-	pointC.setX(coordArray[0]);
-	pointC.setY(coordArray[1]);
-
-	triangle1 = new Triangle(pointA, pointB, pointC);
-
-	//-----------------------------------------------------------------
-
 	std::cout << std::endl;
 
-	//-----------------------------------------------------------------
-
-	std::cout << "Введите координаты точки A второго треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
+	std::cout << "Введите шесть координат 1 треугольника: ";
+	std::cin >> *triangle2;
 	if (!std::cin) wrongInputTerminate();
-
-	pointA.setX(coordArray[0]);
-	pointA.setY(coordArray[1]);
-
-	std::cout << "Введите координаты точки B второго треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
-	if (!std::cin) wrongInputTerminate();
-
-	pointB.setX(coordArray[0]);
-	pointB.setY(coordArray[1]);
-
-	std::cout << "Введите координаты точки C второго треугольника: ";
-	std::cin >> coordArray[0] >> coordArray[1];
-
-	if (!std::cin) wrongInputTerminate();
-
-	pointC.setX(coordArray[0]);
-	pointC.setY(coordArray[1]);
-
-	triangle2 = new Triangle(pointA, pointB, pointC);
-
-	//-----------------------------------------------------------------
-
 	std::cout << std::endl;
 
 	std::cout << "Вершины треугольника 1 - ";
-	output(*triangle1);
-	std::cout << std::endl;
+	std::cout << *triangle1 << std::endl;
 	
 	std::cout << "Вершины треугольника 2 - ";
-	output(*triangle2);
-	std::cout << std::endl << std::endl;
+	std::cout << *triangle1 << std::endl;
+
 
 	std::cout << "Треугольники" 
 		<< (triangle1->isEqual(*triangle2) ? " " : " не ") 
